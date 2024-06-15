@@ -5,9 +5,9 @@ Source code for "**Can Personal Health Information Be Secured in LLM? Privacy At
 
 1. Preparing Test Set
   - `make_testset/`
-    - `sampling_for_dataset_random.ipynb`: Creating $$D_{{random}}$$ dataset
-    - `sampling_for_dataset_frequency.ipynb`: Creating $$D_{{frequency}}$$ dataset
-    - `sampling_for_dataset_length.ipynb`: Creating $$D_{{length}}$$ dataset
+    - `sampling_for_dataset_random.ipynb`: Creating $D_{\text{random}}$ dataset
+    - `sampling_for_dataset_frequency.ipynb`: Creating $D_{\text{frequency}}$ dataset
+    - `sampling_for_dataset_length.ipynb`: Creating $D_{\text{length}}$ dataset
 
 2. Fine-tuning LLMs on MIMIC-III
   - `fine-tuning/`
