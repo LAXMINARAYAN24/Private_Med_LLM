@@ -3,11 +3,10 @@
 Source code for "**Can Personal Health Information Be Secured in LLM? Privacy Attack and Defense in the Medical Domain**"
 
 1. Fine-tuning LLMs on MIMIC-III
-  - `fine-tuning/`
-    - **Step 1: ICD coding** (step1_icd_tuning/)
-      - `python main_fin.py --mode train --model [llama2/llama3/llama3-instruct/llama3-1b/mistral/mistral-instruct/biomistral/medalpaca/meditron]`
-    - **Step 2: Clinical coding** (step2_clinical_coding/)
-      - `python main_fin.py --mode train --model [llama2/llama3/llama3-instruct/llama3-1b/mistral/mistral-instruct/biomistral/medalpaca/meditron]`
+  - **Step 1: ICD coding** (fine-tuning/step1_icd_tuning/)
+    - `python main_fin.py --mode train --model [llama2/llama3/llama3-instruct/llama3-1b/mistral/mistral-instruct/biomistral/medalpaca/meditron]`
+  - **Step 2: Clinical coding** (fine-tuning/step2_clinical_coding/)
+    - `python main_fin.py --mode train --model [llama2/llama3/llama3-instruct/llama3-1b/mistral/mistral-instruct/biomistral/medalpaca/meditron]`
 
 2. Preparing Test Set
   - `make_testset/`
