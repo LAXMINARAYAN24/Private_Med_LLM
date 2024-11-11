@@ -20,9 +20,13 @@ Source code for "**Can Personal Health Information Be Secured in LLM? Privacy At
       - `python main_fin.py --mode test --model [llama2/llama3/llama3-instruct/llama3-1b/mistral/mistral-instruct/biomistral/medalpaca/meditron]`
 
 4. Defense Against Privacy Leakages
+  - **MediRed** : `defense/MediRed.csv`  
   - `defense/`
-    - `defense_module.py`
+    - `clinical_privacy_defense.py` : Fine-tuning Llama Guard models for MediRed dataset
 
 5. Evaluation
   - `evaluation_metric/`
-    - `clinical_eval.py`
+    - ** Attack1 | Condition Generation: `generate_result_eval.py`
+    - ** Attack2 | Condition Multiple-choice: `multichoice_result_eval.py`
+    - ** Attack3 | Condition Binary: `binary_result_eval.py`
+    - ** Attack3 | Gender: `gender_result_eval.py`
