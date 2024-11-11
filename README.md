@@ -19,7 +19,7 @@ Source code for "**Can Personal Health Information Be Secured in LLM? Privacy At
     
 ### 3. Privacy Attack on LLMs Trained with MIMIC-III
   - `fine-tuning/step2_clinical_coding/`
-      - `python main_fin.py --mode test --model [llama2/llama3/llama3-instruct/llama3-1b/mistral/mistral-instruct/biomistral/medalpaca/meditron]`
+      - `python main_fin.py --mode test --model [llama2/llama3/llama3-instruct/llama3-1b/mistral/mistral-instruct/biomistral/medalpaca/meditron] --attack`
 
 
 ### 4. Evaluation
