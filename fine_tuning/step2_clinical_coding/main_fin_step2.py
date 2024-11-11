@@ -3,6 +3,7 @@ import wandb
 import os
 import pandas as pd
 from step2 import load_process_data, load_model, train
+from attack import test
 from pathlib import Path
 from datasets import Dataset
 import pickle
@@ -79,6 +80,18 @@ def main():
     
     parser.add_argument('--data_path', type=str, default='data/',
                         help = "set data_path")
+
+    parser.add_argument('--attack', type=str, default="generate",
+                        help = "[generate | binary | multichoice | gender]")
+    
+    parser.add_argument('--fake', type=bool, default=False,
+                        help = "boolean for fake binary attack (default: False)")
+    
+    parser.add_argument('--vanilla', type=bool, default=False,
+                        help = "vanilla LLM")
+    
+    parser.add_argument('--max_token', type=int, default=500,
+                        help = "LLM's max new token")
     
     args = parser.parse_args()
 
@@ -132,4 +145,7 @@ if __name__ == '__main__':
         trained_model, tokenizer = train(model, tokenizer, train_dataset, test_dataset, peft_config, args)
         
         wandb.finish()
+
+    elif args.mode == 'test':
+        final_result = test(args)
         
