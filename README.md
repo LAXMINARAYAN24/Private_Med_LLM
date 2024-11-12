@@ -12,9 +12,7 @@ Source code for "**Can Personal Health Information Be Secured in LLM? Privacy At
 
 ### 2. Preparing Test Set
   - `make_testset/`
-    - `sampling_for_dataset_random.ipynb`: Creating $D_{\text{random}}$ dataset
-    - `sampling_for_dataset_frequency.ipynb`: Creating $D_{\text{frequency}}$ dataset
-    - `sampling_for_dataset_length.ipynb`: Creating $D_{\text{length}}$ dataset
+    - `sampling_dataset.ipynb`: Code for creating $D_{\text{frequency}}$, $D_{\text{length}}$, $D_{\text{random}}$ datasets.
   - The created datasets $D_{\text{random}}$, $D_{\text{frequency}}$, $D_{\text{length}}$ can be found in the `data/data_for_test` directory.
     
 ### 3. Privacy Attack on LLMs Trained with MIMIC-III
