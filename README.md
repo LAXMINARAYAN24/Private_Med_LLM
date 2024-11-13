@@ -22,10 +22,10 @@ Source code for "**Can Personal Health Information Be Secured in LLM? Privacy At
 
 ### 4. Evaluation
   - `evaluation_metric/`
-    - **Attack1 | Condition Generation**: `generate_result_eval.py`
-    -  **Attack2 | Condition Multiple-choice**: `multichoice_result_eval.py`
-    - **Attack3 | Condition Binary**: `binary_result_eval.py`
-    - **Attack3 | Gender**: `gender_result_eval.py`
+    - **Condition Attack1 | Generation**: `generate_result_eval.py`
+    -  **Condition Attack2 | Multiple-choice**: `multichoice_result_eval.py`
+    - **Condition Attack3 | Binary**: `binary_result_eval.py`
+    - **Gender Attack**: `gender_result_eval.py`
 
 ### 5. Defense Against Privacy Leakages
   - **MediRed dataset** : `defense/MediRed.csv`  
