@@ -1,151 +1,142 @@
 import argparse
-import wandb
-import os
-import pandas as pd
-from step2 import load_process_data, load_model, train
-from attack import test
+import logging
 from pathlib import Path
-from datasets import Dataset
 import pickle
+from typing import Tuple
 
+from datasets import Dataset
+# Imported set_seed to apply it globally at execution
+from step2 import load_process_data, load_model, train, set_seed 
 
-os.environ["WANDB_PROJECT"] = "PROJECT_NAME" 
-os.environ["WANDB_LOG_MODEL"] = "checkpoint" 
-os.environ["WANDB_API_KEY"] = 'SECRET_KEY'
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
+logger = logging.getLogger(__name__)
 
+# Registry mapping model choices to cached dataset files
+DATASET_CACHE_FILES = {
+    "llama2": ("df_train_llama2_prompt.pkl", "df_test_llama2_prompt.pkl"),
+    "mistral": ("df_train_mistral_prompt.pkl", "df_test_mistral_prompt.pkl"),
+    "mistral_instruct": ("df_train_mistral_instruct_prompt.pkl", "df_test_mistral_instruct_prompt.pkl"),
+}
 
-def main():
-    # Training settings
-    parser = argparse.ArgumentParser(description="Finetuning clinical dataset")
+def load_cached_dataset(model_key: str) -> Tuple[Dataset, Dataset]:
+    """Helper to load pickled prompt datasets if available."""
+    if model_key not in DATASET_CACHE_FILES:
+        raise FileNotFoundError(f"No cached dataset mapping defined for model choice: '{model_key}'.")
+
+    train_file, test_file = DATASET_CACHE_FILES[model_key]
+
+    logger.info(f"Loading cached dataset pickles: {train_file}, {test_file}")
+    with open(train_file, 'rb') as f:
+        train_df = pickle.load(f)
+    with open(test_file, 'rb') as f:
+        test_df = pickle.load(f)
+
+    return Dataset.from_pandas(train_df), Dataset.from_pandas(test_df)
+
+def str2bool(v):
+    """Robust boolean parsing for argparse."""
+    if isinstance(v, bool):
+        return v
+    return str(v).lower() in ("yes", "true", "t", "1")
+
+def parse_args() -> argparse.Namespace:
+    """Parses command line arguments."""
+    parser = argparse.ArgumentParser(description="Finetuning clinical dataset - Step 2")
 
     parser.add_argument('--run_name', type=str, default="model_ft", required=True,
-                        help = "run_name for wandb (default: model_ft)")
-    
+                        help="Run name for output tracking (default: model_ft)")
     parser.add_argument('--model', type=str, default="llama3", required=True,
-                        help = "choose llm models: llama2, llama3, opt (default: opt)")
-    
-    parser.add_argument('--max_seq', type=int, default = 2048,
-                        help = "max_seq for training model (default: 2048)")
-    
-    parser.add_argument('--bit8', type=bool, default=True,
-                        help = "boolean type for model load in 8bit (default: True)")
+                        help="Choose LLM model: llama2, llama3, mistral, etc.")
+    parser.add_argument('--max_seq', type=int, default=2048,
+                        help="Max sequence length for training (default: 2048)")
+    parser.add_argument('--bit8', type=str2bool, default=True,
+                        help="Load model in 8-bit quantization (default: True)")
+    parser.add_argument('--seed', type=int, default=42,
+                        help="Random seed (default: 42)")
 
+    # LoRA Hyperparameters
     parser.add_argument('--lora_r', type=int, default=16,
-                        help ="lora attention dimension(rank) (default: 8)")
-
+                        help="LoRA attention dimension rank (default: 16)")
     parser.add_argument('--lora_alpha', type=int, default=32,
-                        help = "for lora scaling (default: 32)")
-    
-    parser.add_argument('--lora_dropout', type=int, default=0.05,
-                        help = "dropout probability for lora layers (default: 0.05)")
-    
+                        help="LoRA scaling factor (default: 32)")
+    parser.add_argument('--lora_dropout', type=float, default=0.05,
+                        help="Dropout probability for LoRA layers (default: 0.05)")
     parser.add_argument('--lora_bias', type=str, default="none",
-                        help = "bias type for lora. can be 'none', 'all', or 'lora_only' (default: none)")
-    
+                        help="Bias type for LoRA: 'none', 'all', or 'lora_only' (default: none)")
+
+    # Training Hyperparameters
     parser.add_argument('--batch_size', type=int, default=4,
-                        help = "batch size (default: 4)")
-    
+                        help="Per-device batch size (default: 4)")
     parser.add_argument('--gradient_step', type=int, default=4,
-                        help = "gradient accumulation steps for training (default: 4)")
-    
+                        help="Gradient accumulation steps (default: 4)")
     parser.add_argument('--warmup_steps', type=int, default=100,
-                        help = "warmup_steps for training (default: 100)")
-    
-    parser.add_argument('--max_steps', type=int, default=300,#, required=True,
-                        help = "max epochs for training (default: 200)")
-    
-    parser.add_argument('--lr_rate', type=int, default=2e-4,
-                        help = "learning rate (default: 2e-4)")
-    
+                        help="Warmup steps for learning rate scheduler (default: 100)")
+    parser.add_argument('--max_steps', type=int, default=300,
+                        help="Max training steps (default: 300)")
+    parser.add_argument('--lr_rate', type=float, default=2e-4,
+                        help="Learning rate (default: 2e-4)")
     parser.add_argument('--lr_schedular', type=str, default="cosine",
-                        help = "learning schedular (default: cosine)")
-    
-    parser.add_argument('--fp16', type=bool, default=True,
-                        help = "boolean for fp16 (default: True)")
-    
+                        help="Learning rate scheduler type (default: cosine)")
+    parser.add_argument('--fp16', action="store_true", default=False,
+                        help="Use FP16 precision (default: False)")
     parser.add_argument('--logging_steps', type=int, default=1,
-                        help = "logging steps for training (default: 1)")
-    
+                        help="Logging step frequency (default: 1)")
+
+    # Output & Configuration Flags
     parser.add_argument('--output_path', type=str, default="output",
-                        help = "save model, tokenizer, ... results path (default: output)")
+                        help="Save path for trained models/adapters (default: output)")
+    parser.add_argument('--use_collator', action="store_true", default=False,
+                        help="Use data collator flag (default: False)")
+    parser.add_argument('--model_use_cache', action="store_true", default=False,
+                        help="Set model.config.use_cache (default: False)")
+    parser.add_argument('--mode', type=str, default="train", choices=["train", "test"],
+                        help="Mode: [train | test] (default: train)")
+    parser.add_argument('--data_path', type=str, default="data/",
+                        help="Path to dataset directory (default: data/)")
 
-    parser.add_argument('--use_collator', type=bool, default=False,
-                        help = "use data_collator or not (default: False)")
-    
-    parser.add_argument('--model_use_cache', type=bool, default=False,
-                        help = "model.config.use_cache (default: False)")
-    
-    parser.add_argument('--mode', type=str, default="train",
-                        help = "[test | train]")
-    
-    parser.add_argument('--data_path', type=str, default='data/',
-                        help = "set data_path")
-
+    # Evaluation / Attack Flags
     parser.add_argument('--attack', type=str, default="generate",
-                        help = "[generate | binary | multichoice | gender]")
-    
-    parser.add_argument('--fake', type=bool, default=False,
-                        help = "boolean for fake binary attack (default: False)")
-    
-    parser.add_argument('--vanilla', type=bool, default=False,
-                        help = "vanilla LLM")
-    
+                        help="Attack type: [generate | binary | multichoice | gender]")
+    parser.add_argument('--fake', action="store_true", default=False,
+                        help="Fake binary attack flag (default: False)")
+    parser.add_argument('--vanilla', action="store_true", default=False,
+                        help="Vanilla LLM execution without adapters")
     parser.add_argument('--max_token', type=int, default=500,
-                        help = "LLM's max new token")
-    
-    args = parser.parse_args()
+                        help="Max new tokens for LLM generation")
 
-    return args
+    return parser.parse_args()
+
+if __name__ == '__main__':
+    args = parse_args()
+    # Apply seed immediately after parsing arguments
+    set_seed(args.seed) 
     
-if __name__ == '__main__':    
-    args = main()
-    print(args)
-    model_output_path = os.path.join(args.output_path, args.model)
-    if os.path.isdir(model_output_path):
-        print("Path is already exist! Make sure it is empty!")
-        pass
-    else:
-        os.makedirs(model_output_path)
-        print("Make a new path: ", model_output_path)
-    
+    logger.info(f"Execution arguments: {args}")
+
+    # Path safety check using pathlib
+    output_dir = Path(args.output_path) / args.model
+    output_dir.mkdir(parents=True, exist_ok=True)
+    logger.info(f"Output directory: {output_dir}")
+
     if args.mode == 'train':
+        try:
+            train_dataset, test_dataset = load_cached_dataset(args.model)
+        except (FileNotFoundError, KeyError) as e:
+            logger.info(f"Cached dataset unavailable ({e}). Generating dataset from raw sources...")
+            train_dataset, test_dataset = load_process_data(args)
 
-        try: 
-            print("### Load dataset")
-            if args.model == 'llama2':
-                with open(file='df_train_llama2_prompt.pkl', mode='rb') as f:
-                    train_dataset = pickle.load(f)
-                train_dataset = Dataset.from_pandas(train_dataset)
-                with open(file='df_test_llama2_prompt.pkl', mode='rb') as f:
-                    test_dataset = pickle.load(f)
-                test_dataset = Dataset.from_pandas(test_dataset)     
-            elif args.model == "mistral":
-                with open(file='df_train_mistral_prompt.pkl', mode='rb') as f:
-                    train_dataset = pickle.load(f)
-                train_dataset = Dataset.from_pandas(train_dataset)
-                with open(file='df_test_mistral_prompt.pkl', mode='rb') as f:
-                    test_dataset = pickle.load(f)
-                test_dataset = Dataset.from_pandas(test_dataset)
-            elif args.model == 'mistral_instruct':
-                with open(file='df_train_mistral_instruct_prompt.pkl', mode='rb') as f:
-                    train_dataset = pickle.load(f)
-                train_dataset = Dataset.from_pandas(train_dataset)
-                with open(file='df_test_mistral_instruct_prompt.pkl', mode='rb') as f:
-                    test_dataset = pickle.load(f)
-                test_dataset = Dataset.from_pandas(test_dataset)
-            else:
-                print("CHECK MODEL")
-                
-        except FileNotFoundError:
-            print("### Make dataset")
-            df_train, df_test = load_process_data(args)
-
-        model, tokenizer, peft_config = load_model(args)
+        model, tokenizer, peft_config = load_model(
+            model_key=args.model,
+            bit8=args.bit8,
+            lora_r=args.lora_r,
+            lora_alpha=args.lora_alpha,
+            lora_dropout=args.lora_dropout,
+            lora_bias=args.lora_bias
+        )
         
-        trained_model, tokenizer = train(model, tokenizer, train_dataset, test_dataset, peft_config, args)
-        
-        wandb.finish()
+        train(model, tokenizer, train_dataset, test_dataset, peft_config, args)
 
     elif args.mode == 'test':
-        final_result = test(args)
-        
+        from attack import test
+        logger.info("Starting test/attack evaluation pipeline...")
+        test(args)

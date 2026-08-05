@@ -1,249 +1,319 @@
-import os
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "6"
+import logging
+import pickle
+import random
+from pathlib import Path
+from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
-import pickle
-from datasets import Dataset
-import ast
 import torch
-import torch.nn as nn
-import bitsandbytes as bnb
-from peft import LoraConfig, get_peft_model, PeftModel
-from trl import SFTTrainer, DataCollatorForCompletionOnlyLM
-from transformers import AutoTokenizer, AutoModelForCausalLM, TrainingArguments
-from datasets import Dataset, DatasetDict
-from tqdm import tqdm
-from trl import SFTTrainer
-import random
-tqdm.pandas()
-import warnings
-warnings.filterwarnings('ignore')
+from datasets import Dataset
 
+from peft import LoraConfig, PeftModel, get_peft_model
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    PreTrainedModel,
+)
 
-def set_seed(seed):
+from trl import SFTTrainer, SFTConfig
+
+# ==========================================
+# Constants & Configuration
+# ==========================================
+
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
+logger = logging.getLogger(__name__)
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DATA_DIR = PROJECT_ROOT / "data"
+
+MODEL_REGISTRY = {
+    "llama2": "meta-llama/Llama-2-7b-hf",
+    "mistral": "mistralai/Mistral-7B-v0.3",
+    "mistral_instruct": "mistralai/Mistral-7B-Instruct-v0.3",
+    "llama3": "meta-llama/Meta-Llama-3-8B",
+    "llama3-instruct": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "llama3-1b": "meta-llama/Llama-3.2-1B",
+    "biomistral": "BioMistral/BioMistral-7B",
+    "medalpaca": "medalpaca/medalpaca-7b",
+    "meditron": "epfl-llm/meditron-7b",
+}
+
+LORA_TARGET_MODULES = ["q_proj", "k_proj", "v_proj"]
+
+def set_seed(seed: int) -> None:
+    """Sets seed for reproducibility across all libraries."""
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(seed)
 
-
-def preprocessing_data(data, df):
-    data_new = [list(x) for x in (data[:][0])]
-
-    note = []
-    subject_id = []
-
-    for i in data_new:
-        note.append(i[0])
-        subject_id.append(i[1])
-
-    df_train = pd.DataFrame({'note': note,'SUBJECT_ID': subject_id})
-
-    df_train_merged = df_train.merge(df[['SUBJECT_ID', 'code_name', 'DESCRIPTION']], on='SUBJECT_ID', how='left')
-
-    return df_train_merged
-
-def match_code_to_description(codes):
-    icd_descript = pd.read_csv('dataset/MIMIC/ICD9_Descriptions.csv')
-    icd_dict = dict(zip(icd_descript['CODE'], icd_descript['DESCRIPTION']))
-
-    if not isinstance(codes, list):
-        return ["No codes available"]
-    
-    return [f"{icd_dict.get(code, 'Unknown description')} corresponds to {code}" for code in codes]
-
-def processing_df(train_df, subject_id_to_name):
-    train_df['condition_nums'] = train_df['code_name'].apply(lambda x: len(x) if isinstance(x, list) else 0)
-
-    subject_id_to_name['FULL_NAME'] = subject_id_to_name['FIRST_NAME'] + ' ' + subject_id_to_name['LAST_NAME']
-    fin_df = pd.merge(subject_id_to_name[['SUBJECT_ID', 'FULL_NAME', 'GENDER']], train_df, on='SUBJECT_ID', how='inner')
-    fin_df['answer'] = fin_df['code_name'].apply(match_code_to_description)
-
-    
-    fin_df = fin_df[['SUBJECT_ID', 'FULL_NAME', 'GENDER', 'note', 'code_name', 'DESCRIPTION', 'condition_nums', 'answer']]
-    fin_df.columns = ['SUBJECT_ID', 'name', 'gender', 'note', 'code','condition','num', 'answer']
-
-    return fin_df
-
-
-def print_trainable_parameters(model):
-    trainable_params = 0
-    all_param = 0
-    for _, param in model.named_parameters():
-        all_param += param.numel()
-        if param.requires_grad:
-            trainable_params += param.numel()
-    print(
-        f"trainable params: {trainable_params} || all params: {all_param} || trainable%: {100 * trainable_params / all_param}"
+def print_trainable_parameters(model: torch.nn.Module) -> None:
+    """Prints the number of trainable parameters in the model."""
+    trainable_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
+    all_param = sum(p.numel() for p in model.parameters())
+    logger.info(
+        f"Trainable params: {trainable_params} || All params: {all_param} || Trainable%: {100 * trainable_params / all_param:.4f}"
     )
 
+# ==========================================
+# Task-Specific Clinical Data Pipelines 
+# ==========================================
 
-def formatting_prompts_func(example):
-    output_texts = []
+def load_process_data(args: Any, test_split: float = 0.2) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    """Loads raw MIMIC-III CSVs, merges diagnoses with notes, and creates train/test splits."""
+    logger.info("Loading raw MIMIC-III tables...")
     
-    answer = "### Output: {answer}"
-
-    for i in range(len(example['prompt'])): 
-        text = answer.format(answer=example['answer'][i]) 
-        prompt = example['prompt'][i]
-        new_prompt = prompt + text
+    try:
+        # Load only the columns we actually need to save memory
+        notes = pd.read_csv(DATA_DIR / 'NOTEEVENTS.csv', usecols=['SUBJECT_ID', 'CATEGORY', 'TEXT'])
+        diagnoses = pd.read_csv(DATA_DIR / 'DIAGNOSES_ICD.csv', usecols=['SUBJECT_ID', 'ICD9_CODE'])
         
-        output_texts.append(new_prompt)
+        # Standard MIMIC-III uses ICD9_CODE. If your specific extract uses 'CODE', 
+        # swap the usecols below and update the merge logic accordingly.
+        icd_descript = pd.read_csv(DATA_DIR / 'D_ICD_DIAGNOSES.csv', usecols=['ICD9_CODE', 'LONG_TITLE'])
+        
+        patients = pd.read_csv(DATA_DIR / 'PATIENTS.csv', usecols=['SUBJECT_ID', 'GENDER'])
+    except FileNotFoundError as e:
+        logger.error(f"Missing raw MIMIC-III file. Ensure all official CSVs are in {DATA_DIR}")
+        raise e
 
-
-    return output_texts
-
-
-def load_process_data(args):
-    path = 'dataset/'
-
-    print("START LOAD DATA")
-    icd_descript = pd.read_csv(path + 'ICD9_Descriptions.csv')
-    subject_id_to_icd = pd.read_csv(path + 'SUBJECT_ID_to_ICD9.csv')
-    subject_id_to_name = pd.read_csv(path + 'SUBJECT_ID_to_NAME.csv')
-
-    with open(file=path+'train_data.pickle', mode='rb') as f:
-        train_data = pickle.load(f)
-
-    with open(file=path+'test_data.pickle', mode='rb') as f:
-        test_data = pickle.load(f)
-    print("DONE LOAD DATA")
-
-    icd_name_subject = pd.merge(subject_id_to_icd, icd_descript, on='CODE', how='inner')
-
-    subject_icd_des = icd_name_subject.groupby(['SUBJECT_ID'])['DESCRIPTION'].apply(list).reset_index(name='DESCRIPTION')
-    subject_icd_code = icd_name_subject.groupby(['SUBJECT_ID'])['CODE'].apply(list).reset_index(name='code_name')
-
-    merge_icd = pd.merge(subject_icd_des, subject_icd_code, on='SUBJECT_ID', how='inner')
-
-    print("START preprocessing_data(train_data, subject_icd_names)")
-    train_df = preprocessing_data(train_data, merge_icd)
-
-    print("START preprocessing_data(train_data, subject_icd_names)")
-    test_df = preprocessing_data(test_data, merge_icd)
-
-    print("START processing_df(train_df)")
-    df_train = processing_df(train_df, subject_id_to_name)
-
-    print("START processing_df(test_df)")
-    df_test = processing_df(test_df, subject_id_to_name)
+    logger.info("Processing clinical notes...")
+    # Filter for 'Discharge summary' to keep context windows manageable
+    notes = notes[notes['CATEGORY'] == 'Discharge summary'].copy()
     
+    # Sort by SUBJECT_ID to ensure deterministic dropping behavior
+    notes = notes.sort_values("SUBJECT_ID")
+    # Keep the latest summary per subject
+    notes = notes.drop_duplicates(subset=['SUBJECT_ID'], keep='last')
+    notes = notes.rename(columns={'TEXT': 'note'})
+
+    logger.info("Processing diagnoses and ICD definitions...")
+    # Merge descriptions into diagnoses
+    merged_diag = diagnoses.merge(icd_descript, on='ICD9_CODE', how='inner')
+    
+    # Group codes and descriptions into lists per patient
+    grouped_diag = merged_diag.groupby('SUBJECT_ID').agg({
+        'ICD9_CODE': list,
+        'LONG_TITLE': list
+    }).reset_index().rename(columns={'ICD9_CODE': 'code', 'LONG_TITLE': 'condition'})
+
+    logger.info("Merging final dataset...")
+    # Merge notes, diagnoses, and patient demographics
+    df = notes.merge(grouped_diag, on='SUBJECT_ID').merge(patients, on='SUBJECT_ID')
+    
+    # Generate synthetic names (since standard MIMIC-III is de-identified)
+    df['name'] = "Patient_" + df['SUBJECT_ID'].astype(str)
+    df['gender'] = df['GENDER']
+    
+    # Format the exact expected answer string
+    def create_answer(row):
+        return [f"{desc} corresponds to {code}" for desc, code in zip(row['condition'], row['code'])]
+        
+    df['answer'] = df.apply(create_answer, axis=1)
+    
+    # Train/Test Split
+    logger.info("Splitting dataset into train/test...")
+    df = df.sample(frac=1, random_state=42).reset_index(drop=True)
+    train_size = int((1 - test_split) * len(df))
+    
+    df_train = df.iloc[:train_size].copy()
+    df_test = df.iloc[train_size:].copy()
+    
+    logger.info(f"Dataset generated successfully. Train: {len(df_train)} rows, Test: {len(df_test)} rows")
     return df_train, df_test
 
+# ==========================================
+# Prompt Generation & Dataset Preprocessing
+# ==========================================
 
-
-def load_model(args):
-    ''' Load Model'''
-    if args.model == 'llama2':
-        model_name = "meta-llama/Llama-2-7b-hf"
-    elif args.model == "mistral":
-        model_name = "mistralai/Mistral-7B-v0.3"
-    elif args.model == 'mistral_instruct':
-        model_name = "mistralai/Mistral-7B-Instruct-v0.3"
-    elif args.model == "llama2":
-        model_name = "meta-llama/Llama-2-7b-hf"
-    elif args.model == "llama3":
-        model_name = "meta-llama/Meta-Llama-3-8B"
-    elif args.model == "llama3-instruct":
-        model_name = "meta-llama/Meta-Llama-3-8B-Instruct"
-    elif args.model == "llama3-1b":
-        model_name = "meta-llama/Llama-3.2-1B"
-    elif args.model == "biomistral":
-        model_name = "BioMistral/BioMistral-7B"
-    elif args.model =="medalpaca":
-        model_name = "medalpaca/medalpaca-7b"
-    elif args.model == "meditron":
-        model_name = "epfl-llm/meditron-7b"
+def format_row(row: dict) -> dict:
+    """Dynamically constructs the instruction prompt and formats the target."""
+    note = row.get('note', '')
+    name = row.get('name', 'The patient')
+    
+    # Dynamically build the instruction prompt
+    prompt = (
+        f"As a medical expert, analyze the following clinical note for {name} "
+        f"and extract the relevant medical conditions and their corresponding ICD-9 codes.\n\n"
+        f"### Clinical Note:\n{note}\n\n"
+    )
+    
+    answer = row.get('answer', '')
+    if isinstance(answer, list):
+        answer_str = "\n".join(answer)
     else:
-        print("CHECK MODEL NAME AGAIN")
-        
-        
-    pretrained_model_path = args.model + "/output/"
-    print(f"Step 1 PATH: {pretrained_model_path}")
-    if not os.path.exists(pretrained_model_path):
-        print(f"Path {pretrained_model_path} does not exist!")
-        
+        answer_str = str(answer)
 
+    return {
+        "text": f"{prompt}### Condition:\n{answer_str}",
+        "label": answer_str
+    }
+
+def prepare_dataset(df: pd.DataFrame) -> Dataset:
+    """Converts a DataFrame to a HuggingFace Dataset and maps formatting."""
+    logger.info("Mapping dataset rows to modern TRL 'text' column...")
+    dataset = Dataset.from_pandas(df)
+    dataset = dataset.map(format_row)
+
+    # Keep only the column used by SFTTrainer
+    dataset = dataset.remove_columns(
+    [c for c in dataset.column_names if c != "text"]
+    )
+    return dataset
+
+# ==========================================
+# Model Loading (Base + Step 1 + Step 2)
+# ==========================================
+
+def load_model(
+    model_key: str, 
+    bit8: bool, 
+    lora_r: int, 
+    lora_alpha: int, 
+    lora_dropout: float, 
+    lora_bias: str
+) -> Tuple[PreTrainedModel, AutoTokenizer, LoraConfig]:
+    """Load the base model, attach the Step 1 adapter, and prepare the Step 2 LoRA adapter."""
+    
+    model_name = MODEL_REGISTRY.get(model_key)
+    if not model_name:
+        raise ValueError(f"Model key '{model_key}' not found in MODEL_REGISTRY.")
+        
+    pretrained_model_path = PROJECT_ROOT / model_key / "output"
+    logger.info(f"Step 1 Adapter PATH: {pretrained_model_path}")
+    
+    if not pretrained_model_path.exists():
+        raise FileNotFoundError(
+            f"Step 1 adapter not found:\n{pretrained_model_path}\n"
+            "Run Step 1 ICD tuning first."
+        )
+
+    # Only instantiate BitsAndBytesConfig if bit8 is explicitly True
+    quantization_config = None
+    if bit8:
+        quantization_config = BitsAndBytesConfig(
+            load_in_8bit=True,
+        )
+
+    # Avoid unnecessary BF16 issues when not explicitly using 8-bit quantization
+    dtype = torch.bfloat16 if bit8 else torch.float16
+
+    logger.info(f"Loading Base Model: {model_name}...")
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
-        load_in_8bit=args.bit8,
+        quantization_config=quantization_config,
         device_map="auto",
-        torch_dtype="auto"
+        torch_dtype=dtype,
     )
-    model=PeftModel.from_pretrained(model, pretrained_model_path)
+    
+    # Load Step 1 adapter (Frozen for sequential fine-tuning)
+    logger.info("Attaching Step 1 LoRA adapter...")
+    model = PeftModel.from_pretrained(
+        model, 
+        str(pretrained_model_path),
+        is_trainable=False,
+    )
+    
+    # Explicitly freeze all parameters before adding the new adapter
+    for p in model.parameters():
+        p.requires_grad = False
+    
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    tokenizer.pad_token = tokenizer.eos_token
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
     
-    for param in model.parameters():    
-        param.requires_grad = False 
-        if param.ndim == 1:
-            param.data = param.data.to(torch.float32)
-
+    # Prevent tokenizer/model mismatch warnings
+    model.config.pad_token_id = tokenizer.pad_token_id
+    
+    # Enable grads for the upcoming Step 2 LoRA & disable cache for gradient checkpointing
+    model.config.use_cache = False
     model.gradient_checkpointing_enable()  
     model.enable_input_require_grads()
 
-    class CastOutputToFloat(nn.Sequential):
-        def forward(self, x): return super().forward(x).to(torch.float32)
-    model.lm_head = CastOutputToFloat(model.lm_head)
-    
-    
+    # Apply Step 2 LoRA
+    logger.info("Configuring Step 2 LoRA adapter...")
     peft_config = LoraConfig(
-        r = args.lora_r,
-        lora_alpha = args.lora_alpha,
-        target_modules = ["q_proj", "k_proj", "v_proj"],
-        lora_dropout = args.lora_dropout,
-        bias = args.lora_bias,
-        task_type = "CAUSAL_LM"
+        r=lora_r,
+        lora_alpha=lora_alpha,
+        target_modules=LORA_TARGET_MODULES,
+        lora_dropout=lora_dropout,
+        bias=lora_bias,
+        task_type="CAUSAL_LM"
     )
 
     model = get_peft_model(model, peft_config)
-    print(print_trainable_parameters(model))
+    print_trainable_parameters(model)
     
     return model, tokenizer, peft_config
 
+# ==========================================
+# Trainer & Execution
+# ==========================================
 
-def train(model, tokenizer, train_dataset, test_dataset, peft_config, args):
-    response_template = " ### Condition:"
-    collator = DataCollatorForCompletionOnlyLM(response_template, tokenizer=tokenizer)
-    torch.cuda.empty_cache()
-    
-    for param in model.parameters():
-        if param.dtype == torch.float16:
-            param.data = param.data.to(torch.float32)
-            
-    model_output_path = os.path.join(args.output_path, args.model)
+def train(
+    model: PreTrainedModel, 
+    tokenizer: AutoTokenizer, 
+    train_dataset: Any, 
+    test_dataset: Any, 
+    peft_config: LoraConfig, 
+    args: Any
+) -> Tuple[PreTrainedModel, AutoTokenizer]:
+    """Executes Step 2 SFT training loop."""
+    logger.info("Preparing for Step 2 training...")
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
 
-    training_args=TrainingArguments(
-        per_device_train_batch_size = args.batch_size,
-        gradient_accumulation_steps = args.gradient_step,
-        report_to = "wandb",
-        warmup_steps = args.warmup_steps,
-        max_steps = args.max_steps,
-        learning_rate = args.lr_rate,
-        lr_scheduler_type = args.lr_schedular,
-        bf16=True,
-        logging_steps = args.logging_steps,
-        output_dir = model_output_path
+    model_output_path = Path(args.output_path) / args.model
+
+    # Ensure dataset is mapped to 'text' if passed as raw HF Dataset or DataFrame
+    if isinstance(train_dataset, pd.DataFrame):
+        train_dataset = prepare_dataset(train_dataset)
+    elif isinstance(train_dataset, Dataset) and "text" not in train_dataset.column_names:
+        train_dataset = train_dataset.map(format_row, remove_columns=train_dataset.column_names)
+
+    if isinstance(test_dataset, pd.DataFrame):
+        test_dataset = prepare_dataset(test_dataset)
+    elif isinstance(test_dataset, Dataset) and "text" not in test_dataset.column_names:
+        test_dataset = test_dataset.map(format_row, remove_columns=test_dataset.column_names)
+
+    logger.info("Initializing SFTTrainer...")
+    training_args = SFTConfig(
+        output_dir=str(model_output_path),
+        per_device_train_batch_size=args.batch_size,
+        gradient_accumulation_steps=args.gradient_step,
+        warmup_steps=args.warmup_steps,
+        max_steps=args.max_steps,
+        learning_rate=args.lr_rate,
+        lr_scheduler_type=args.lr_schedular,
+        fp16=args.fp16,
+        bf16=not args.fp16,
+        logging_steps=args.logging_steps,
+        report_to="none",
+        save_strategy="steps",
+        save_steps=max(args.max_steps, 1),
+
+        dataset_text_field="text",
+        max_seq_length=args.max_seq,
     )
 
     trainer = SFTTrainer(
-        model = model,
-        args = training_args,
-        max_seq_length = min(args.max_seq, tokenizer.model_max_length),
-        train_dataset = train_dataset,
-        eval_dataset = test_dataset,
-        formatting_func = formatting_prompts_func,
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=test_dataset,
+        processing_class=tokenizer,
         peft_config=peft_config,
     )
-
-    model.config.use_cache = args.model_use_cache 
     
+    logger.info("Starting Step 2 training...")
     trainer.train()
 
-    trainer.save_model(model_output_path)
-    
+    logger.info(f"Saving Step 2 trained adapter to {model_output_path}...")
+    trainer.save_model(str(model_output_path))
+
     return model, tokenizer

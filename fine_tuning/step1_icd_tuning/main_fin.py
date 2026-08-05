@@ -1,118 +1,184 @@
 import argparse
-import wandb
-import os
-import pandas as pd
-from args_finetune import load_process_data, generate_prompt, load_model, train
 from pathlib import Path
 
+from args_finetune import (
+    set_seed,
+    load_datasets,
+    prepare_dataset,
+    load_model,
+    create_lora_config,
+    train,
+)
 
 
-os.environ["WANDB_PROJECT"] = "PROJECT_NAME" 
-os.environ["WANDB_LOG_MODEL"] = "checkpoint" 
-os.environ["WANDB_API_KEY"] = 'SECRET_KEY'
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description="Step 1 ICD Fine-tuning (V2)"
+    )
+
+    # General
+    parser.add_argument(
+        "--run_name",
+        type=str,
+        default="model_ft",
+        help="Experiment name",
+    )
+
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed",
+    )
+
+    # Model
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="llama3-1b",
+        help="Model key from MODEL_REGISTRY",
+    )
+
+    parser.add_argument(
+        "--bit8",
+        action="store_true",
+        default=True,
+        help="Load model in 8-bit",
+    )
+
+    parser.add_argument(
+        "--max_seq",
+        type=int,
+        default=2048,
+        help="Maximum sequence length",
+    )
+
+    # LoRA
+    parser.add_argument(
+        "--lora_r",
+        type=int,
+        default=16,
+    )
+
+    parser.add_argument(
+        "--lora_alpha",
+        type=int,
+        default=32,
+    )
+
+    parser.add_argument(
+        "--lora_dropout",
+        type=float,
+        default=0.05,
+    )
+
+    parser.add_argument(
+        "--lora_bias",
+        type=str,
+        default="none",
+    )
+
+    # Training
+    parser.add_argument(
+        "--batch_size",
+        type=int,
+        default=4,
+    )
+
+    parser.add_argument(
+        "--gradient_step",
+        type=int,
+        default=4,
+    )
+
+    parser.add_argument(
+        "--warmup_steps",
+        type=int,
+        default=100,
+    )
+
+    parser.add_argument(
+        "--max_steps",
+        type=int,
+        default=300,
+    )
+
+    parser.add_argument(
+        "--lr_rate",
+        type=float,
+        default=2e-4,
+    )
+
+    parser.add_argument(
+        "--lr_schedular",
+        type=str,
+        default="cosine",
+    )
+
+    parser.add_argument(
+        "--logging_steps",
+        type=int,
+        default=1,
+    )
+
+    parser.add_argument(
+        "--output_path",
+        type=str,
+        default="output",
+    )
+
+    parser.add_argument(
+        "--model_use_cache",
+        action="store_true",
+        help="Enable model cache during training",
+    )
+
+    return parser.parse_args()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Finetuning clinical dataset")
+    args = parse_args()
 
-    parser.add_argument('--run_name', type=str, default="model_ft", required=True,
-                        help = "run_name for wandb (default: model_ft)")
-    
-    parser.add_argument('--model', type=str, default="llama3", required=True,
-                        help = "choose llm models: llama2, llama3, opt (default: opt)")
-    
-    parser.add_argument('--max_seq', type=int, default = 2048,
-                        help = "max_seq for training model (default: 2048)")
-    
-    parser.add_argument('--bit8', type=bool, default=True,
-                        help = "boolean type for model load in 8bit (default: True)")
-
-    parser.add_argument('--lora_r', type=int, default=16,
-                        help ="lora attention dimension(rank) (default: 8)")
-
-    parser.add_argument('--lora_alpha', type=int, default=32,
-                        help = "for lora scaling (default: 32)")
-    
-    parser.add_argument('--lora_dropout', type=int, default=0.05,
-                        help = "dropout probability for lora layers (default: 0.05)")
-    
-    parser.add_argument('--lora_bias', type=str, default="none",
-                        help = "bias type for lora. can be 'none', 'all', or 'lora_only' (default: none)")
-    
-    parser.add_argument('--batch_size', type=int, default=4,
-                        help = "batch size (default: 4)")
-    
-    parser.add_argument('--gradient_step', type=int, default=4,
-                        help = "gradient accumulation steps for training (default: 4)")
-    
-    parser.add_argument('--warmup_steps', type=int, default=100,
-                        help = "warmup_steps for training (default: 100)")
-    
-    parser.add_argument('--max_steps', type=int, default=300,
-                        help = "max epochs for training (default: 200)")
-    
-    parser.add_argument('--lr_rate', type=int, default=2e-4,
-                        help = "learning rate (default: 2e-4)")
-    
-    parser.add_argument('--lr_schedular', type=str, default="cosine",
-                        help = "learning schedular (default: cosine)")
-    
-    parser.add_argument('--fp16', type=bool, default=True,
-                        help = "boolean for fp16 (default: True)")
-    
-    parser.add_argument('--logging_steps', type=int, default=1,
-                        help = "logging steps for training (default: 1)")
-    
-    parser.add_argument('--output_path', type=str, default="output",
-                        help = "save model, tokenizer, ... results path (default: output)")
-
-    parser.add_argument('--use_collator', type=bool, default=False,
-                        help = "use data_collator or not (default: False)")
-    
-    parser.add_argument('--model_use_cache', type=bool, default=False,
-                        help = "model.config.use_cache (default: False)")
-    
-    parser.add_argument('--mode', type=str, default="train",
-                        help = "[test | train]")
-    
-    parser.add_argument('--data_path', type=str, default='data/',
-                        help = "set data_path")
-    
-    args = parser.parse_args()
-
-    return args
-    
-        
-if __name__ == '__main__':    
-    args = main()
     print(args)
-    model_output_path = os.path.join(args.model, args.output_path)
-    if os.path.isdir(model_output_path):
-        print("Path is already exist! Make sure it is empty!")
-        pass
-    else:
-        os.makedirs(model_output_path)
-        print("Make a new path: ", model_output_path)
-    
-    if args.mode == 'train':
 
-        try: 
-            df_train = pd.read_csv('test_ICD9.csv')
-            df_test = pd.read_csv('train_ICD9.csv')
-        except FileNotFoundError:
-            df_train, df_test = load_process_data(args)
-        
-        train_dataset, test_dataset= generate_prompt(df_train, df_test)
+    set_seed(args.seed)
 
-        model, tokenizer, peft_config = load_model(args)
-        
-        trained_model, tokenizer = train(model, tokenizer, train_dataset, test_dataset, peft_config, args)
-        
-        wandb.finish()
-        
-        
-    
-    
-    
-    
-    
+    output_dir = Path(args.model) / args.output_path
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"[INFO] Output directory: {output_dir}")
+
+    # Load dataset
+    train_df, test_df = load_datasets()
+
+    # Prepare HuggingFace datasets
+    train_dataset = prepare_dataset(train_df)
+    test_dataset = prepare_dataset(test_df)
+
+    # Load model
+    model, tokenizer = load_model(
+        model_key=args.model,
+        bit8=args.bit8,
+    )
+    print(next(model.parameters()).dtype)
+    # Create LoRA config
+    peft_config = create_lora_config(
+        r=args.lora_r,
+        alpha=args.lora_alpha,
+        dropout=args.lora_dropout,
+        bias=args.lora_bias,
+    )
+
+    # Train
+    train(
+        model=model,
+        tokenizer=tokenizer,
+        train_dataset=train_dataset,
+        test_dataset=test_dataset,
+        peft_config=peft_config,
+        args=args,
+    )
+
+
+if __name__ == "__main__":
+    main()

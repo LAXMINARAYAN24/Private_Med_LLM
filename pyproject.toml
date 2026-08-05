@@ -1,0 +1,31 @@
+[project]
+name = "private-med-llm"
+version = "0.1.0"
+description = "Sequential LoRA fine-tuning for clinical coding and privacy experiments"
+requires-python = ">=3.11"
+
+dependencies = [
+    "torch==2.6.0",
+    "torchvision==0.21.0",
+    "torchaudio==2.6.0",
+
+    "transformers==4.46.3",
+    "trl==0.15.2",
+    "peft==0.20.0",
+    "accelerate==1.14.0",
+
+    "bitsandbytes==0.50.0",
+
+    "datasets>=3.0.0",
+    "huggingface-hub>=0.27.0",
+    "safetensors>=0.5.0",
+
+    "pandas>=2.2",
+    "numpy>=1.26",
+    "scikit-learn>=1.4",
+
+    "sentencepiece",
+    "protobuf",
+    "tqdm",
+    "pyarrow"
+]

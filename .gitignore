@@ -1,0 +1,163 @@
+# ============================================================
+# Private_Med_LLM - .gitignore
+# ============================================================
+
+##############################
+# Python
+##############################
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+*.whl
+build/
+dist/
+pip-wheel-metadata/
+
+##############################
+# Virtual Environments
+##############################
+
+.venv-paper/
+venv/
+env/
+ENV/
+
+##############################
+# Environment Variables
+##############################
+.env
+.env.*
+*.env
+
+##############################
+# IDEs
+##############################
+.vscode/
+.idea/
+*.iml
+
+##############################
+# Jupyter
+##############################
+.ipynb_checkpoints/
+
+##############################
+# OS Files
+##############################
+.DS_Store
+Thumbs.db
+
+##############################
+# Logs
+##############################
+*.log
+logs/
+
+##############################
+# Pytest / Coverage
+##############################
+.pytest_cache/
+.coverage
+htmlcov/
+.cache/
+
+##############################
+# Hugging Face
+##############################
+.cache/huggingface/
+huggingface/
+hf_cache/
+
+##############################
+# Model Checkpoints
+##############################
+checkpoint-*/
+checkpoints/
+runs/
+wandb/
+mlruns/
+
+##############################
+# Trained Models
+##############################
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.onnx
+
+##############################
+# LoRA Adapters
+##############################
+output/
+**/output/
+
+##############################
+# TensorBoard
+##############################
+events.out.tfevents*
+tensorboard/
+
+##############################
+# Dataset Cache
+##############################
+*.arrow
+*.lock
+dataset_cache/
+cache/
+
+##############################
+# Pickled datasets
+##############################
+*.pkl
+*.pickle
+
+##############################
+# MIMIC-III Dataset (Do NOT upload)
+##############################
+data/
+NOTEEVENTS.csv
+DIAGNOSES_ICD.csv
+D_ICD_DIAGNOSES.csv
+PATIENTS.csv
+
+##############################
+# Generated evaluation outputs
+##############################
+results/
+predictions/
+metrics/
+reports/
+
+##############################
+# Temporary files
+##############################
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+##############################
+# NVIDIA / CUDA
+##############################
+*.nvvp
+
+##############################
+# macOS/Linux
+##############################
+.fuse_hidden*
+.directory
+.Trashes
+
+##############################
+# Keep project metadata
+##############################
+!README.md
+!requirements.txt
+!pyproject.toml
+!LICENSE
