@@ -183,7 +183,14 @@ def load_model(
     if not model_name:
         raise ValueError(f"Model key '{model_key}' not found in MODEL_REGISTRY.")
         
-    pretrained_model_path = PROJECT_ROOT / model_key / "output"
+    # Corrected canonical path to Step 1 output
+    pretrained_model_path = (
+        PROJECT_ROOT 
+        / "fine_tuning" 
+        / "step1_icd_tuning" 
+        / model_key 
+        / "output"
+    )
     logger.info(f"Step 1 Adapter PATH: {pretrained_model_path}")
     
     if not pretrained_model_path.exists():
@@ -191,6 +198,8 @@ def load_model(
             f"Step 1 adapter not found:\n{pretrained_model_path}\n"
             "Run Step 1 ICD tuning first."
         )
+
+    
 
     # Only instantiate BitsAndBytesConfig if bit8 is explicitly True
     quantization_config = None

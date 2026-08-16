@@ -53,6 +53,9 @@ def parse_args() -> argparse.Namespace:
                         help="Load model in 8-bit quantization (default: True)")
     parser.add_argument('--seed', type=int, default=42,
                         help="Random seed (default: 42)")
+    parser.add_argument("--sample",type=str,default="random",choices=["random", "frequency", "length"],
+                        help="Sampling strategy for privacy attack.")
+    parser.add_argument("--sample_size",    type=int,    default=4000,    help="Number of evaluation samples.")
 
     # LoRA Hyperparameters
     parser.add_argument('--lora_r', type=int, default=16,
