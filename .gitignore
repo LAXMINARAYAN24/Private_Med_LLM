@@ -160,4 +160,15 @@ reports/
 !README.md
 !requirements.txt
 !pyproject.toml
-!LICENSEtest_result/
+!LICENSE
+
+
+# Generated test outputs
+##############################
+test_result/
+phi.md
+
+##############################
+# Local research / working files
+##############################
+phi.md
