@@ -162,7 +162,6 @@ reports/
 !pyproject.toml
 !LICENSE
 
-
 # Generated test outputs
 ##############################
 test_result/
