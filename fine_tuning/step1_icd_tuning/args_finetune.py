@@ -143,7 +143,7 @@ torch_dtype=torch.float16'''
         model_name,
         quantization_config=bnb_config,
         device_map="auto",
-        torch_dtype=torch.bfloat16,
+        torch_dtype=torch.float16,
         )
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -154,7 +154,9 @@ torch_dtype=torch.float16'''
 
     tokenizer.padding_side = "right"
 
-    model.gradient_checkpointing_enable()
+    model.gradient_checkpointing_enable(
+        gradient_checkpointing_kwargs={"use_reentrant": False}
+    )
     model.enable_input_require_grads()
 
     return model, tokenizer
@@ -196,7 +198,8 @@ def train(
     print_trainable_parameters(model)
             
     # Using pathlib for the output directory
-    model_output_path = Path(args.model) / args.output_path
+    step1_root = Path(__file__).resolve().parent
+    model_output_path = step1_root / args.model / args.output_path
 
     logger.info("Initializing SFTTrainer...")
     training_args = SFTConfig(
@@ -207,9 +210,12 @@ def train(
         max_steps=args.max_steps,
         learning_rate=args.lr_rate,
         lr_scheduler_type=args.lr_schedular,
-        fp16=False,
-        bf16=True,
+        fp16=True,
+        bf16=False,
         logging_steps=args.logging_steps,
+        save_strategy="steps",
+        save_steps=args.save_steps,
+
         report_to="none",
 
         dataset_text_field="text",
@@ -240,7 +246,18 @@ def train(
     model.config.use_cache = args.model_use_cache 
     
     logger.info("Starting training...")
-    trainer.train()
+    resume_checkpoint = model_output_path / "checkpoint-1010"
+
+    if not resume_checkpoint.exists():
+        raise FileNotFoundError(
+            f"Required checkpoint not found: {resume_checkpoint}"
+        )
+
+    logger.info(f"Resuming from {resume_checkpoint}")
+
+    trainer.train(
+        resume_from_checkpoint=str(resume_checkpoint)
+    )
 
     logger.info(f"Saving trained adapter to {model_output_path}...")
     trainer.save_model(str(model_output_path))
