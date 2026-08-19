@@ -122,13 +122,6 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--save_steps",
-        type=int,
-        default=100,
-        help="Save checkpoint every N steps",
-    )
-
-    parser.add_argument(
         "--output_path",
         type=str,
         default="output",
