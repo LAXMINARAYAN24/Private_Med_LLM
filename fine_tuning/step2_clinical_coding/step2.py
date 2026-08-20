@@ -10,6 +10,27 @@ import torch
 from datasets import Dataset
 
 from peft import LoraConfig, PeftModel, get_peft_model
+# PyTorch 2.6 compatibility: Transformers loads RNG checkpoints with
+# weights_only=True by default, but Trainer RNG checkpoints contain NumPy/Python objects.
+import transformers.trainer
+_original_load_rng_state = transformers.trainer.Trainer._load_rng_state
+
+def _load_rng_state_compat(self, checkpoint):
+    if checkpoint is None:
+        return
+    import os
+    rng_file = os.path.join(checkpoint, "rng_state.pth")
+    if not os.path.isfile(rng_file):
+        return
+    checkpoint_rng_state = torch.load(rng_file, weights_only=False)
+    random.setstate(checkpoint_rng_state["python"])
+    np.random.set_state(checkpoint_rng_state["numpy"])
+    torch.random.set_rng_state(checkpoint_rng_state["cpu"])
+    if torch.cuda.is_available() and "cuda" in checkpoint_rng_state:
+        torch.cuda.random.set_rng_state(checkpoint_rng_state["cuda"])
+
+transformers.trainer.Trainer._load_rng_state = _load_rng_state_compat
+
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -320,7 +341,9 @@ def train(
     )
     
     logger.info("Starting Step 2 training...")
-    trainer.train()
+    trainer.train(
+        resume_from_checkpoint="output_10000/llama3-1b/checkpoint-1500"
+    )
 
     logger.info(f"Saving Step 2 trained adapter to {model_output_path}...")
     trainer.save_model(str(model_output_path))
