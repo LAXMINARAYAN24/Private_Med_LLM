@@ -307,7 +307,7 @@ def train(
         save_steps=max(args.max_steps, 1),
 
         dataset_text_field="text",
-        max_length=args.max_seq,
+        max_seq_length=args.max_seq,
     )
 
     trainer = SFTTrainer(
@@ -316,6 +316,7 @@ def train(
         train_dataset=train_dataset,
         eval_dataset=test_dataset,
         processing_class=tokenizer,
+        peft_config=peft_config,
     )
     
     logger.info("Starting Step 2 training...")
