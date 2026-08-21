@@ -1,0 +1,18 @@
+STEP 2 TOKENIZER AUDIT
+======================
+
+Train rows: 296
+Test rows: 75
+Tokenizer: fine_tuning/step2_clinical_coding/output_10000/llama3-1b
+Vocabulary: 128000
+
+TOKEN LENGTHS
+Minimum: 450
+Maximum: 11727
+Mean: 3142.83
+Median: 2880.0
+<= 512: 4/296 (1.35%)
+<= 1024: 24/296 (8.11%)
+<= 1536: 42/296 (14.19%)
+<= 2048: 89/296 (30.07%)
+<= 4096: 220/296 (74.32%)
