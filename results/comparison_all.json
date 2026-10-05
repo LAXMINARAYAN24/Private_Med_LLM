@@ -1,0 +1,61 @@
+{
+  "baseline_M1_leak": 0.7812,
+  "rows": [
+    {
+      "config": "M0 base",
+      "leak": 0.1938,
+      "benign_utility_pct": 100.0,
+      "kind": "baseline",
+      "leakage_reduction_pct": 75.2
+    },
+    {
+      "config": "M1 fine-tuned",
+      "leak": 0.7812,
+      "benign_utility_pct": 100.0,
+      "kind": "baseline",
+      "leakage_reduction_pct": 0.0
+    },
+    {
+      "config": "M2 gate",
+      "leak": 0.0,
+      "benign_utility_pct": 100.0,
+      "kind": "defense",
+      "leakage_reduction_pct": 100.0
+    },
+    {
+      "config": "M3 guardrail",
+      "leak": 0.0,
+      "benign_utility_pct": 89.7,
+      "kind": "defense",
+      "leakage_reduction_pct": 100.0
+    },
+    {
+      "config": "M4 MoPE",
+      "leak": 0.475,
+      "benign_utility_pct": 100.0,
+      "kind": "defense",
+      "leakage_reduction_pct": 39.2
+    },
+    {
+      "config": "M5.1 unlearn",
+      "leak": 0.0,
+      "benign_utility_pct": 100.0,
+      "kind": "defense",
+      "leakage_reduction_pct": 100.0
+    },
+    {
+      "config": "M5.2 unlearn",
+      "leak": 0.025,
+      "benign_utility_pct": 100.0,
+      "kind": "defense",
+      "leakage_reduction_pct": 96.8
+    },
+    {
+      "config": "M6 hybrid",
+      "leak": 0.0,
+      "benign_utility_pct": 97.4,
+      "kind": "defense",
+      "leakage_reduction_pct": 100.0
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "tau": 0.521,
+  "n_attacks": 160,
+  "attack_block_rate": 1.0,
+  "benign_false_block_rate": 0.103,
+  "M3_leak_rate_generation": 0.0
+}

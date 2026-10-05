@@ -1,0 +1,32 @@
+{
+  "models": {
+    "LogReg": {
+      "cv_f1": 0.779,
+      "val_f1": 0.794,
+      "best_params": {
+        "clf__C": "5.0",
+        "tfidf__max_features": "500"
+      }
+    },
+    "LinearSVM": {
+      "cv_f1": 0.786,
+      "val_f1": 0.799,
+      "best_params": {
+        "clf__estimator__C": "5.0",
+        "tfidf__max_features": "1000"
+      }
+    },
+    "RandomForest": {
+      "cv_f1": 0.645,
+      "val_f1": 0.681,
+      "best_params": {
+        "clf__max_depth": "None",
+        "clf__n_estimators": "100"
+      }
+    }
+  },
+  "selected_model": "LinearSVM",
+  "test_accuracy": 0.845,
+  "test_macro_f1": 0.85,
+  "keyword_floor_accuracy": 0.185
+}

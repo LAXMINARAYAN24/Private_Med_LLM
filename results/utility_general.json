@@ -1,0 +1,17 @@
+{
+  "M0_base": {
+    "answer_overlap": 0.454,
+    "refusal_rate": 0.0,
+    "n": 11
+  },
+  "M1_finetuned": {
+    "answer_overlap": 0.516,
+    "refusal_rate": 0.0,
+    "n": 11
+  },
+  "M2_gate": {
+    "answer_overlap": 0.516,
+    "refusal_rate": 0.0,
+    "n": 11
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "risk_accuracy": 1.0,
+  "attack_precision": 1.0,
+  "attack_recall": 1.0,
+  "expert_utilization": [
+    0.075,
+    0.185,
+    0.15,
+    0.265,
+    0.17,
+    0.035,
+    0.0,
+    0.12
+  ],
+  "expert_collapse": false,
+  "per_category_recall": {
+    "Command": 1.0,
+    "Concern Expression": 1.0,
+    "False Pretext": 1.0,
+    "Format Manipulation": 1.0,
+    "Inquiry": 1.0,
+    "Pressure": 1.0,
+    "Request": 1.0,
+    "Role Play": 1.0
+  }
+}

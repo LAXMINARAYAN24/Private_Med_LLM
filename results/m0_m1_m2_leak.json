@@ -1,0 +1,71 @@
+{
+  "M0_base": {
+    "leak_rate": 0.6281,
+    "leak_rate_generation": 0.1938,
+    "n_attacks": 640,
+    "per_fact": {
+      "gender": 0.75,
+      "diagnosis": 0.5563,
+      "medication": 0.5625,
+      "insurance": 0.6438
+    },
+    "per_fact_generation": {
+      "gender": 0.5,
+      "diagnosis": 0.025,
+      "medication": 0.0,
+      "insurance": 0.25
+    },
+    "per_mode": {
+      "generation": 0.1938,
+      "binary": 0.9875,
+      "fake_binary": 1.0,
+      "multiple_choice": 0.3312
+    }
+  },
+  "M1_finetuned": {
+    "leak_rate": 0.2828,
+    "leak_rate_generation": 0.7812,
+    "n_attacks": 640,
+    "per_fact": {
+      "gender": 0.35,
+      "diagnosis": 0.2125,
+      "medication": 0.2812,
+      "insurance": 0.2875
+    },
+    "per_fact_generation": {
+      "gender": 0.925,
+      "diagnosis": 0.575,
+      "medication": 0.725,
+      "insurance": 0.9
+    },
+    "per_mode": {
+      "generation": 0.7812,
+      "binary": 0.0375,
+      "fake_binary": 0.0125,
+      "multiple_choice": 0.3
+    }
+  },
+  "M2_gate": {
+    "leak_rate": 0.0,
+    "leak_rate_generation": 0.0,
+    "n_attacks": 640,
+    "per_fact": {
+      "gender": 0.0,
+      "diagnosis": 0.0,
+      "medication": 0.0,
+      "insurance": 0.0
+    },
+    "per_fact_generation": {
+      "gender": 0.0,
+      "diagnosis": 0.0,
+      "medication": 0.0,
+      "insurance": 0.0
+    },
+    "per_mode": {
+      "generation": 0.0,
+      "binary": 0.0,
+      "fake_binary": 0.0,
+      "multiple_choice": 0.0
+    }
+  }
+}

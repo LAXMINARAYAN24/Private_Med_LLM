@@ -3,6 +3,15 @@
 # ============================================================
 
 ##############################
+# Virtual Environments
+##############################
+.venv/
+.venv-paper/
+venv/
+env/
+ENV/
+
+##############################
 # Python
 ##############################
 __pycache__/
@@ -17,15 +26,6 @@ dist/
 pip-wheel-metadata/
 
 ##############################
-# Virtual Environments
-##############################
-
-.venv-paper/
-venv/
-env/
-ENV/
-
-##############################
 # Environment Variables
 ##############################
 .env
@@ -33,11 +33,13 @@ ENV/
 *.env
 
 ##############################
-# IDEs
+# IDEs & OS
 ##############################
 .vscode/
 .idea/
 *.iml
+.DS_Store
+Thumbs.db
 
 ##############################
 # Jupyter
@@ -45,44 +47,33 @@ ENV/
 .ipynb_checkpoints/
 
 ##############################
-# OS Files
-##############################
-.DS_Store
-Thumbs.db
-
-##############################
-# Logs
+# Logs & Testing
 ##############################
 *.log
 logs/
-
-##############################
-# Pytest / Coverage
-##############################
 .pytest_cache/
 .coverage
 htmlcov/
 .cache/
 
 ##############################
-# Hugging Face
+# Hugging Face & Caches
 ##############################
 .cache/huggingface/
 huggingface/
 hf_cache/
+**/hf_cache/
+models/
+models/hf_cache/
 
 ##############################
-# Model Checkpoints
+# Model Checkpoints & Large Weights
 ##############################
 checkpoint-*/
 checkpoints/
 runs/
 wandb/
 mlruns/
-
-##############################
-# Trained Models
-##############################
 *.bin
 *.pt
 *.pth
@@ -91,51 +82,10 @@ mlruns/
 *.onnx
 
 ##############################
-# LoRA Adapters
+# Temporary & Backup directories
 ##############################
-output/
-**/output/
-
-##############################
-# TensorBoard
-##############################
-events.out.tfevents*
-tensorboard/
-
-##############################
-# Dataset Cache
-##############################
-*.arrow
-*.lock
-dataset_cache/
-cache/
-
-##############################
-# Pickled datasets
-##############################
-*.pkl
-*.pickle
-
-##############################
-# MIMIC-III Dataset (Do NOT upload)
-##############################
-data/
-NOTEEVENTS.csv
-DIAGNOSES_ICD.csv
-D_ICD_DIAGNOSES.csv
-PATIENTS.csv
-
-##############################
-# Generated evaluation outputs
-##############################
-results/
-predictions/
-metrics/
-reports/
-
-##############################
-# Temporary files
-##############################
+new/
+*.zip
 *.tmp
 *.temp
 *.bak
@@ -143,16 +93,28 @@ reports/
 *.swo
 
 ##############################
-# NVIDIA / CUDA
+# LoRA & TensorBoard
 ##############################
-*.nvvp
+output/
+**/output/
+events.out.tfevents*
+tensorboard/
 
 ##############################
-# macOS/Linux
+# Dataset Cache & MIMIC Data
 ##############################
-.fuse_hidden*
-.directory
-.Trashes
+*.arrow
+*.lock
+dataset_cache/
+cache/
+*.pkl
+*.pickle
+data/
+MIMIC -III (10000 patients)/
+NOTEEVENTS.csv
+DIAGNOSES_ICD.csv
+D_ICD_DIAGNOSES.csv
+PATIENTS.csv
 
 ##############################
 # Keep project metadata
@@ -163,11 +125,5 @@ reports/
 !LICENSE
 
 # Generated test outputs
-##############################
 test_result/
-phi.md
-
-##############################
-# Local research / working files
-##############################
 phi.md

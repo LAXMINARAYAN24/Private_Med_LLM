@@ -1,0 +1,177 @@
+{
+  "dataset": "MediRed_plus",
+  "classes": [
+    "Benign",
+    "Command",
+    "Concern Expression",
+    "False Pretext",
+    "Format Manipulation",
+    "Inquiry",
+    "Pressure",
+    "Request",
+    "Role Play"
+  ],
+  "accuracy": 0.982,
+  "macro_f1": 0.983,
+  "random_baseline": 0.111,
+  "tau_flag": 0.931,
+  "novel_flag_rate_on_known": 0.035,
+  "n_test": 1329,
+  "per_category": {
+    "Benign": {
+      "precision": 1.0,
+      "recall": 0.992,
+      "f1": 0.996,
+      "n": 123
+    },
+    "Command": {
+      "precision": 0.993,
+      "recall": 0.95,
+      "f1": 0.971,
+      "n": 160
+    },
+    "Concern Expression": {
+      "precision": 1.0,
+      "recall": 0.993,
+      "f1": 0.996,
+      "n": 142
+    },
+    "False Pretext": {
+      "precision": 0.994,
+      "recall": 0.994,
+      "f1": 0.994,
+      "n": 164
+    },
+    "Format Manipulation": {
+      "precision": 0.972,
+      "recall": 0.993,
+      "f1": 0.982,
+      "n": 138
+    },
+    "Inquiry": {
+      "precision": 0.945,
+      "recall": 0.979,
+      "f1": 0.962,
+      "n": 141
+    },
+    "Pressure": {
+      "precision": 1.0,
+      "recall": 0.993,
+      "f1": 0.996,
+      "n": 139
+    },
+    "Request": {
+      "precision": 0.94,
+      "recall": 0.957,
+      "f1": 0.949,
+      "n": 164
+    },
+    "Role Play": {
+      "precision": 1.0,
+      "recall": 0.994,
+      "f1": 0.997,
+      "n": 158
+    }
+  },
+  "confusion_matrix": [
+    [
+      122,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      152,
+      0,
+      0,
+      4,
+      0,
+      0,
+      4,
+      0
+    ],
+    [
+      0,
+      0,
+      141,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      163,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      1,
+      0,
+      0,
+      137,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      138,
+      0,
+      3,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      138,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      7,
+      0,
+      157,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      157
+    ]
+  ]
+}

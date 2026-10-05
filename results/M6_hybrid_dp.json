@@ -1,0 +1,10 @@
+{
+  "config": "M6_hybrid_dp",
+  "n_attacks": 160,
+  "leak_rate_generation": 0.0,
+  "benign_false_block_rate": 0.103,
+  "avg_latency_s_per_prompt": 0.003,
+  "block_stage_distribution": {
+    "blocked:guardrail": 160
+  }
+}

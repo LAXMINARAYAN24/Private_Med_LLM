@@ -1,0 +1,58 @@
+{
+  "accuracy": 0.855,
+  "macro_f1": 0.862,
+  "random_baseline": 0.125,
+  "tau_flag": 0.862,
+  "novel_flag_rate_on_known": 0.055,
+  "n_test": 200,
+  "per_category": {
+    "Command": {
+      "precision": 0.9,
+      "recall": 0.73,
+      "f1": 0.806,
+      "n": 37
+    },
+    "Concern Expression": {
+      "precision": 0.714,
+      "recall": 0.938,
+      "f1": 0.811,
+      "n": 16
+    },
+    "False Pretext": {
+      "precision": 1.0,
+      "recall": 0.969,
+      "f1": 0.984,
+      "n": 32
+    },
+    "Format Manipulation": {
+      "precision": 0.85,
+      "recall": 1.0,
+      "f1": 0.919,
+      "n": 17
+    },
+    "Inquiry": {
+      "precision": 0.722,
+      "recall": 0.65,
+      "f1": 0.684,
+      "n": 20
+    },
+    "Pressure": {
+      "precision": 0.875,
+      "recall": 1.0,
+      "f1": 0.933,
+      "n": 7
+    },
+    "Request": {
+      "precision": 0.792,
+      "recall": 0.809,
+      "f1": 0.8,
+      "n": 47
+    },
+    "Role Play": {
+      "precision": 0.958,
+      "recall": 0.958,
+      "f1": 0.958,
+      "n": 24
+    }
+  }
+}

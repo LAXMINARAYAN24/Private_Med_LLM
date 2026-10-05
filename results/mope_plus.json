@@ -1,0 +1,187 @@
+{
+  "dataset": "MediRed_plus",
+  "classes": [
+    "Benign",
+    "Command",
+    "Concern Expression",
+    "False Pretext",
+    "Format Manipulation",
+    "Inquiry",
+    "Pressure",
+    "Request",
+    "Role Play"
+  ],
+  "accuracy": 0.982,
+  "macro_f1": 0.983,
+  "random_baseline": 0.111,
+  "n_test": 1329,
+  "expert_utilization": [
+    0.117,
+    0.12,
+    0.123,
+    0.197,
+    0.102,
+    0.163,
+    0.065,
+    0.029,
+    0.083
+  ],
+  "expert_collapse": false,
+  "per_category": {
+    "Benign": {
+      "precision": 1.0,
+      "recall": 0.984,
+      "f1": 0.992,
+      "n": 123
+    },
+    "Command": {
+      "precision": 0.981,
+      "recall": 0.963,
+      "f1": 0.972,
+      "n": 160
+    },
+    "Concern Expression": {
+      "precision": 1.0,
+      "recall": 0.993,
+      "f1": 0.996,
+      "n": 142
+    },
+    "False Pretext": {
+      "precision": 0.988,
+      "recall": 0.994,
+      "f1": 0.991,
+      "n": 164
+    },
+    "Format Manipulation": {
+      "precision": 0.985,
+      "recall": 0.978,
+      "f1": 0.982,
+      "n": 138
+    },
+    "Inquiry": {
+      "precision": 0.952,
+      "recall": 0.979,
+      "f1": 0.965,
+      "n": 141
+    },
+    "Pressure": {
+      "precision": 1.0,
+      "recall": 0.993,
+      "f1": 0.996,
+      "n": 139
+    },
+    "Request": {
+      "precision": 0.94,
+      "recall": 0.963,
+      "f1": 0.952,
+      "n": 164
+    },
+    "Role Play": {
+      "precision": 1.0,
+      "recall": 0.994,
+      "f1": 0.997,
+      "n": 158
+    }
+  },
+  "confusion_matrix": [
+    [
+      121,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      154,
+      0,
+      0,
+      2,
+      0,
+      0,
+      4,
+      0
+    ],
+    [
+      0,
+      0,
+      141,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      163,
+      0,
+      0,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      3,
+      0,
+      0,
+      135,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      138,
+      0,
+      3,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      138,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      6,
+      0,
+      158,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      157
+    ]
+  ]
+}

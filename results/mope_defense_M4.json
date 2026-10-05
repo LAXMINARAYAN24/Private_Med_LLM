@@ -1,0 +1,7 @@
+{
+  "risk_thresh": 0.5,
+  "n_attacks": 160,
+  "attack_block_rate": 0.338,
+  "benign_false_block_rate": 0.0,
+  "M4_leak_rate_generation": 0.475
+}
