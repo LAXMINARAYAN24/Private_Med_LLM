@@ -1,0 +1,1231 @@
+{
+  "summary": {
+    "n_train": 800,
+    "n_test": 200,
+    "categories": [
+      "Command",
+      "Concern Expression",
+      "False Pretext",
+      "Format Manipulation",
+      "Inquiry",
+      "Pressure",
+      "Request",
+      "Role Play"
+    ],
+    "overall_prototype_accuracy": 0.62,
+    "per_category_recall": {
+      "Command": 0.3784,
+      "Concern Expression": 0.9375,
+      "False Pretext": 0.7188,
+      "Format Manipulation": 0.7647,
+      "Inquiry": 0.1,
+      "Pressure": 0.7143,
+      "Request": 0.6383,
+      "Role Play": 0.9167
+    },
+    "novel_flag_rate": 0.0,
+    "flag_threshold": 0.35
+  },
+  "per_prompt": [
+    {
+      "true_category": "Command",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.5849,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6311,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.5747,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Request",
+      "max_similarity": 0.5602,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7532,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.6596,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.7018,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.4773,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.5301,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6516,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7631,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Request",
+      "max_similarity": 0.6594,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6299,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6555,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Request",
+      "max_similarity": 0.6397,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.6504,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.7558,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Request",
+      "max_similarity": 0.7606,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.3723,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.584,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.5495,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.6891,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Request",
+      "max_similarity": 0.4755,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.598,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.5804,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.5054,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.5484,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.773,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.6475,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.5913,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.6286,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6062,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.6163,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7274,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.6845,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.6163,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Command",
+      "predicted_category": "Command",
+      "max_similarity": 0.6249,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.5749,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.8455,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7208,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7129,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.8242,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6713,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.5553,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7687,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7877,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.8012,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7209,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.5081,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7928,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6672,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.8001,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Concern Expression",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7762,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6275,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6577,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6658,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.7794,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6102,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.8719,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Command",
+      "max_similarity": 0.5026,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.5503,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Request",
+      "max_similarity": 0.7559,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.5193,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6451,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6474,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.5614,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6379,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6246,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6837,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.7714,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Command",
+      "max_similarity": 0.6133,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.6664,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Request",
+      "max_similarity": 0.5107,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6114,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Command",
+      "max_similarity": 0.675,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Command",
+      "max_similarity": 0.6691,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6776,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.7922,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.5832,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Request",
+      "max_similarity": 0.6551,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.6805,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "Request",
+      "max_similarity": 0.6116,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.608,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.5786,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "False Pretext",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.5511,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.605,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.7373,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.5524,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.4983,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.5772,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.6865,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.5728,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.4947,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Command",
+      "max_similarity": 0.5988,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Request",
+      "max_similarity": 0.5862,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.4526,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Command",
+      "max_similarity": 0.659,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.8055,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.6804,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.7087,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Format Manipulation",
+      "max_similarity": 0.6693,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Format Manipulation",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.5137,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Request",
+      "max_similarity": 0.6555,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Command",
+      "max_similarity": 0.6304,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.6037,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.5937,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6691,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Request",
+      "max_similarity": 0.5459,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Command",
+      "max_similarity": 0.6092,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.716,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.5761,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6656,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7308,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Request",
+      "max_similarity": 0.6624,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Request",
+      "max_similarity": 0.7055,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6411,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.769,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Request",
+      "max_similarity": 0.4675,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6987,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7439,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6781,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Inquiry",
+      "predicted_category": "Request",
+      "max_similarity": 0.7031,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Pressure",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.6332,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Pressure",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.7408,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Pressure",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.7334,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Pressure",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.7212,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Pressure",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.8403,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Pressure",
+      "predicted_category": "Request",
+      "max_similarity": 0.6988,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Pressure",
+      "predicted_category": "Command",
+      "max_similarity": 0.7389,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.5081,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6715,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.7872,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.678,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6875,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.599,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.686,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6206,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.7201,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.5844,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Pressure",
+      "max_similarity": 0.5103,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.666,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.8217,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.5401,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.5974,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.5539,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.5105,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.5867,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.5423,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6728,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6114,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6657,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7559,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.7514,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6193,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.7463,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6437,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6358,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6358,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.7742,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6407,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.5838,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.546,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.865,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.8603,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.7131,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "False Pretext",
+      "max_similarity": 0.7349,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6314,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.7232,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.4927,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.4499,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Inquiry",
+      "max_similarity": 0.6006,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.8891,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6862,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.7532,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.7629,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Request",
+      "predicted_category": "Request",
+      "max_similarity": 0.6133,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6247,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.4744,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6927,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.5873,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.4065,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6519,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6498,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.4896,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.4601,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.6317,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Concern Expression",
+      "max_similarity": 0.8275,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6567,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6136,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.7729,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6221,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.5965,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.4971,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6541,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.5186,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6907,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.597,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.5355,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6784,
+      "flagged_as_novel": false
+    },
+    {
+      "true_category": "Role Play",
+      "predicted_category": "Role Play",
+      "max_similarity": 0.6709,
+      "flagged_as_novel": false
+    }
+  ]
+}
