@@ -419,7 +419,7 @@ def evaluate_guardrail_as_defense(max_patients=40):
     """M3: guardrail gating M1 on the PHI attack suite (generation mode).
     Reports attack block rate, benign false-block rate, and residual leak."""
     import json as _json
-    from .models import load_m1, load_tokenizer, generate
+    from .models import load_medgemma_m1, load_medgemma_tokenizer, generate
     from .general_qa import build_general_qa
     from . import attacks as A
     facts = _json.loads((__import__("pathlib").Path("data/mimic/patient_facts.json")).read_text())
@@ -427,7 +427,7 @@ def evaluate_guardrail_as_defense(max_patients=40):
     suite = [a for a in A.build_attacks(facts) if a.mode == "generation"]
 
     gf = GuardrailFilter()
-    tok = load_tokenizer(); m1 = load_m1()
+    tok = load_medgemma_tokenizer(); m1 = load_medgemma_m1()
 
     blocked = leaks = 0
     for atk in suite:

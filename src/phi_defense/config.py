@@ -53,7 +53,7 @@ def pick_device() -> str:
 
 # --- MedGemma configurations -------------------------------------------------
 MEDGEMMA_BASE_MODEL = "google/medgemma-4b-it"
-M1_MEDGEMMA_DIR = CHECKPOINTS / "m1_medgemma_lora"
+M1_MEDGEMMA_DIR = Path(r"C:\Users\sahul\Downloads\Trial\Trial\m1_medgemma_lora")
 M2_MEDGEMMA_DIR = CHECKPOINTS / "m2_medgemma_gate"
 GATE_MEDGEMMA_DIR = M2_MEDGEMMA_DIR
 MIMIC_SPLITS_1800 = DATA_DIR / "mimic" / "splits_1800"

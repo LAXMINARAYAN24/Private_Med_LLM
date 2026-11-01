@@ -355,7 +355,7 @@ def mope_attack_prob(prompt: str, enc=None, mope=None):
 def evaluate_mope_as_defense(max_patients=40, risk_thresh=0.5, use_plus=False):
     """M4: MoPE risk score gating M1 on the PHI attack suite (generation mode)."""
     import pathlib
-    from .models import load_m1, load_tokenizer, generate
+    from .models import load_medgemma_m1, load_medgemma_tokenizer, generate_medgemma
     from . import attacks as A
     facts = json.loads(pathlib.Path("data/mimic/patient_facts.json").read_text())
     facts = dict(list(facts.items())[:max_patients])
@@ -380,13 +380,14 @@ def evaluate_mope_as_defense(max_patients=40, risk_thresh=0.5, use_plus=False):
             r, _ = mope(_embed(enc, [p])); return r.item()
         res_file = RESULTS / "mope_defense_M4.json"
 
-    tok = load_tokenizer(); m1 = load_m1()
+    tok = load_medgemma_tokenizer()
+    m1 = load_medgemma_m1()
 
     blocked = leaks = 0
     for atk in suite:
         if risk(atk.prompt) >= risk_thresh:
             blocked += 1
-        elif A.leaked(atk, generate(m1, tok, atk.prompt)):
+        elif A.leaked(atk, generate_medgemma(m1, tok, atk.prompt)):
             leaks += 1
     benign = [r["question"] for r in build_general_qa()]
     false_block = sum(risk(b) >= risk_thresh for b in benign) / len(benign)

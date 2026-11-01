@@ -70,26 +70,28 @@ def load_medgemma_tokenizer():
 
 
 def load_medgemma_base(load_in_4bit: bool = True):
-    """M0 for MedGemma: stock base model."""
+    """M0 for MedGemma: stock base model (loads to GPU with optional 4-bit)."""
+    dtype = torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16
     if load_in_4bit and torch.cuda.is_available():
         from transformers import BitsAndBytesConfig
         bnb_cfg = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_compute_dtype=dtype,
             bnb_4bit_use_double_quant=True,
         )
         model = AutoModelForImageTextToText.from_pretrained(
             MEDGEMMA_BASE_MODEL,
             quantization_config=bnb_cfg,
             device_map="auto",
+            low_cpu_mem_usage=True,
         )
     else:
-        dtype = torch.bfloat16 if (torch.cuda.is_available() and torch.cuda.is_bf16_supported()) else torch.float16
         model = AutoModelForImageTextToText.from_pretrained(
             MEDGEMMA_BASE_MODEL,
-            torch_dtype=dtype,
+            dtype=dtype,
             device_map="auto",
+            low_cpu_mem_usage=True,
         )
     model.eval()
     return model
@@ -112,12 +114,59 @@ def attach_medgemma_lora(model, r: int = LORA.r, alpha: int = LORA.alpha, dropou
 
 
 def load_medgemma_m1(base=None, load_in_4bit: bool = True):
-    """M1 for MedGemma: base + trained LoRA adapter."""
+    """M1 for MedGemma: base + trained LoRA adapter.
+
+    PEFT 0.19.1 has a bug in _update_offload: it constructs the module key as
+    'language_model.model.layers.X' but MedGemma exposes 'language_model.layers.X'
+    (no inner .model. wrapper). _update_offload is only invoked when base model
+    parameters are on the meta device (accelerate disk-offloading). Workaround:
+    load the base entirely on CPU first (no device_map → no meta params), let
+    PeftModel attach the adapter without error, then dispatch to GPU afterward.
+    """
     from peft import PeftModel
     if not M1_MEDGEMMA_DIR.exists():
         raise FileNotFoundError(f"MedGemma M1 adapter not found at {M1_MEDGEMMA_DIR}; train it first.")
-    base = base or load_medgemma_base(load_in_4bit=load_in_4bit)
-    model = PeftModel.from_pretrained(base, str(M1_MEDGEMMA_DIR))
+
+    if base is not None:
+        model = PeftModel.from_pretrained(base, str(M1_MEDGEMMA_DIR), is_trainable=False)
+    else:
+        if load_in_4bit and torch.cuda.is_available():
+            from transformers import BitsAndBytesConfig
+            bnb_cfg = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_quant_type="nf4",
+                bnb_4bit_compute_dtype=torch.bfloat16,
+                bnb_4bit_use_double_quant=True,
+            )
+            base_model = AutoModelForImageTextToText.from_pretrained(
+                MEDGEMMA_BASE_MODEL,
+                quantization_config=bnb_cfg,
+                device_map={"": 0},
+            )
+            model = PeftModel.from_pretrained(base_model, str(M1_MEDGEMMA_DIR), is_trainable=False)
+        else:
+            dtype = (
+                torch.bfloat16
+                if (torch.cuda.is_available() and torch.cuda.is_bf16_supported())
+                else torch.float16
+            )
+            base_cpu = AutoModelForImageTextToText.from_pretrained(
+                MEDGEMMA_BASE_MODEL,
+                dtype=dtype,
+                device_map="cpu",
+                low_cpu_mem_usage=True,
+            )
+            model = PeftModel.from_pretrained(base_cpu, str(M1_MEDGEMMA_DIR), is_trainable=False)
+            if torch.cuda.is_available():
+                try:
+                    from accelerate import dispatch_model, infer_auto_device_map
+                    total_vram = torch.cuda.get_device_properties(0).total_memory
+                    max_mem = {0: int(total_vram * 0.85), "cpu": "30GiB"}
+                    dev_map = infer_auto_device_map(model, max_memory=max_mem)
+                    model = dispatch_model(model, device_map=dev_map)
+                except Exception:
+                    model = model.cuda()
+
     model.eval()
     return model
 
@@ -159,7 +208,7 @@ def generate(model, tokenizer, prompt: str, max_new_tokens: int = 24,
             gated.enabled = False
     gen = out[0][enc["input_ids"].shape[1]:]
     ans = tokenizer.decode(gen, skip_special_tokens=True)
-    return ans.split("\n")[0].strip()
+    return ans.strip().split("\n")[0].strip() if ans.strip() else ""
 
 
 @torch.no_grad()
@@ -189,7 +238,7 @@ def generate_medgemma(model, tokenizer, prompt: str, max_new_tokens: int = 24, g
             gated.enabled = False
     gen = out[0][enc["input_ids"].shape[1]:]
     ans = tokenizer.decode(gen, skip_special_tokens=True)
-    return ans.split("\n")[0].strip()
+    return ans.strip().split("\n")[0].strip() if ans.strip() else ""
 
 
 def load_medgemma_m2(m1=None, tok=None, gate_path: Path | None = None, load_in_4bit: bool = True):

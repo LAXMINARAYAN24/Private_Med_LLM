@@ -14,10 +14,25 @@ Usage:
 """
 from __future__ import annotations
 
+from pathlib import Path
+
+# Auto-delegate to .venv for CUDA GPU execution
+ROOT = Path(__file__).resolve().parent
+venv_python = ROOT / ".venv" / "Scripts" / "python.exe"
+if venv_python.exists() and Path(sys.executable).resolve() != venv_python.resolve():
+    import subprocess
+    sys.exit(subprocess.call([str(venv_python)] + sys.argv))
+
 import argparse
 import json
+import os
 import sys
-from pathlib import Path
+env_file = ROOT / ".env"
+if env_file.exists():
+    for line in env_file.read_text().splitlines():
+        if "=" in line and not line.strip().startswith("#"):
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
 
 import torch
 
@@ -44,7 +59,7 @@ def evaluate_leak_rate(gen_fn, attacks: list[A.Attack]) -> tuple[float, list[dic
     """Calculates leak rate and collects individual attack responses."""
     leaks = 0
     records = []
-    for att in attacks:
+    for idx, att in enumerate(attacks):
         response = gen_fn(att.prompt)
         leaked = A.leaked(att, response)
         if leaked:
@@ -55,6 +70,8 @@ def evaluate_leak_rate(gen_fn, attacks: list[A.Attack]) -> tuple[float, list[dic
             "response": response,
             "leaked": leaked,
         })
+        if (idx + 1) % 10 == 0 or (idx + 1) == len(attacks):
+            print(f"  [{idx + 1}/{len(attacks)}] evaluated | Leaks so far: {leaks} ({leaks / (idx + 1) * 100:.1f}%)", flush=True)
     rate = leaks / max(len(attacks), 1)
     return rate, records
 
@@ -79,7 +96,17 @@ def main():
     parser = argparse.ArgumentParser(description="Evaluate MedGemma M0 vs M1 Baseline")
     parser.add_argument("--n-patients", "-n", type=int, default=20, help="Number of patients to evaluate (default: 20)")
     parser.add_argument("--max-tokens", "-m", type=int, default=24, help="Max new tokens to generate")
+    parser.add_argument("--defended", choices=["guard", "mope"], help="Evaluate defended M1 using guardrail or MoPE")
     args = parser.parse_args()
+
+    if args.defended:
+        if args.defended == "guard":
+            from src.phi_defense.guardrail import evaluate_guardrail_as_defense
+            evaluate_guardrail_as_defense(max_patients=args.n_patients)
+        elif args.defended == "mope":
+            from src.phi_defense.mope import evaluate_mope_as_defense
+            evaluate_mope_as_defense(max_patients=args.n_patients)
+        return
 
     print("=" * 65)
     print(" MedGemma Baseline Evaluation: M0 (Base) vs M1 (LoRA Fine-Tuned)")
@@ -103,23 +130,23 @@ def main():
     gen_m0 = lambda p: generate_medgemma_m0(m1, tok, p, max_new_tokens=args.max_tokens)
     gen_m1 = lambda p: generate_medgemma(m1, tok, p, max_new_tokens=args.max_tokens)
 
-    print("\nRunning privacy attack evaluation on M0 (Stock MedGemma base)...")
+    print("\nRunning privacy attack evaluation on M0 (Stock MedGemma base)...", flush=True)
     m0_rate, m0_results = evaluate_leak_rate(gen_m0, suite)
 
-    print("Running privacy attack evaluation on M1 (Fine-tuned on MIMIC-III)...")
+    print("\nRunning privacy attack evaluation on M1 (Fine-tuned on MIMIC-III)...", flush=True)
     m1_rate, m1_results = evaluate_leak_rate(gen_m1, suite)
 
-    print("\n" + "=" * 65)
-    print(" COMPARATIVE EVALUATION RESULTS ")
-    print("=" * 65)
-    print(f"Model M0 (Stock google/medgemma-4b-it):       Leak Rate = {m0_rate * 100:.1f}%")
-    print(f"Model M1 (Fine-tuned on 1,800 MIMIC patients): Leak Rate = {m1_rate * 100:.1f}%")
-    print("-" * 65)
+    print("\n" + "=" * 65, flush=True)
+    print(" COMPARATIVE EVALUATION RESULTS ", flush=True)
+    print("=" * 65, flush=True)
+    print(f"Model M0 (Stock google/medgemma-4b-it):       Leak Rate = {m0_rate * 100:.1f}%", flush=True)
+    print(f"Model M1 (Fine-tuned on 1,800 MIMIC patients): Leak Rate = {m1_rate * 100:.1f}%", flush=True)
+    print("-" * 65, flush=True)
     if m1_rate > m0_rate:
-        print(f"Memorization Confirmed: M1 leaks PHI at {m1_rate/max(m0_rate, 0.001):.1f}x higher rate than M0.")
+        print(f"Memorization Confirmed: M1 leaks PHI at {m1_rate/max(m0_rate, 0.001):.1f}x higher rate than M0.", flush=True)
     else:
-        print("Note: Further training epochs or steps may be needed for complete memorization.")
-    print("=" * 65)
+        print("Note: Further training epochs or steps may be needed for complete memorization.", flush=True)
+    print("=" * 65, flush=True)
 
     # Display sample responses
     print("\nSample Comparisons (Patient Fact Probes):")
