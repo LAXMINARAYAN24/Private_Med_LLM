@@ -150,6 +150,7 @@ def ask_model(
     else:
         current_user_content = [{"type": "text", "text": prompt}]
 
+    # Format multi-turn conversation messages ensuring SYSTEM_PROMPT anchors the first user turn
     if not history:
         if image is not None:
             current_user_content = [
@@ -158,8 +159,33 @@ def ask_model(
             ]
         else:
             current_user_content = [{"type": "text", "text": f"{SYSTEM_PROMPT}\n\n{prompt}"}]
+        messages = [{"role": "user", "content": current_user_content}]
+    else:
+        # Reconstruct multi-turn history while anchoring the clinical system prompt to turn 0
+        messages = []
+        for i, turn in enumerate(history):
+            role = turn.get("role", "user")
+            content = turn.get("content", [])
+            # Extract plain string or typed content
+            if isinstance(content, list) and len(content) > 0 and isinstance(content[0], dict):
+                text_val = content[0].get("text", "")
+            elif isinstance(content, str):
+                text_val = content
+            else:
+                text_val = str(content)
 
-    messages = history + [{"role": "user", "content": current_user_content}]
+            if i == 0 and role == "user":
+                if not text_val.startswith("You are MedGemma"):
+                    messages.append({
+                        "role": "user",
+                        "content": [{"type": "text", "text": f"{SYSTEM_PROMPT}\n\n{text_val}"}]
+                    })
+                else:
+                    messages.append({"role": "user", "content": [{"type": "text", "text": text_val}]})
+            else:
+                messages.append({"role": role, "content": [{"type": "text", "text": text_val}]})
+
+        messages.append({"role": "user", "content": current_user_content})
 
     device = next(model.parameters()).device
     inputs = processor.apply_chat_template(
