@@ -16,8 +16,11 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
-ROOT = Path(r"c:\Users\sahul\Downloads\Trial\Trial")
+ROOT = Path(__file__).resolve().parent
 BASE_PPTX = ROOT / "Midsem_Medical_LLM_Privacy_Presentation.pptx"
+BASE_PPTX = ROOT / "MIDESEM_Medical_LLM_Privacy_Presentation.pptx"
+if not BASE_PPTX.exists():
+    BASE_PPTX = ROOT / "Midsem_Medical_LLM_Privacy_Presentation.pptx"
 OUT_PPTX  = ROOT / "Final_Medical_LLM_Privacy_Presentation.pptx"
 
 FIGS = ROOT / "PHI_Defense_Report_Overleaf" / "figures"
@@ -625,6 +628,161 @@ def add_slide_16_empirical_tables(prs):
     p_bt.font.color.rgb = ACCENT_GREEN
 
 
+def add_slide_17_privacy_utility_pareto(prs):
+    """Add Slide 17: Privacy-Utility Tradeoff & Pareto Frontier."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, SLIDE_W, SLIDE_H)
+    bg.fill.solid(); bg.fill.fore_color.rgb = BG_PAGE; bg.line.fill.background()
+
+    # Header
+    tb = slide.shapes.add_textbox(Inches(0.80), Inches(0.36), Inches(11.73), Inches(0.24))
+    p = tb.text_frame.paragraphs[0]
+    p.text = "PARETO FRONTIER ANALYSIS"; p.font.name = FONT_NAME; p.font.size = Pt(10); p.font.bold = True; p.font.color.rgb = ACCENT_BLUE
+
+    tb2 = slide.shapes.add_textbox(Inches(0.80), Inches(0.60), Inches(11.73), Inches(0.44))
+    p2 = tb2.text_frame.paragraphs[0]
+    p2.text = "Privacy–Utility Tradeoff Across Defense Configurations (M0–M6)"; p2.font.name = FONT_NAME; p2.font.size = Pt(21); p2.font.bold = True; p2.font.color.rgb = TEXT_NAVY
+
+    tb3 = slide.shapes.add_textbox(Inches(0.80), Inches(1.08), Inches(11.73), Inches(0.32))
+    p3 = tb3.text_frame.paragraphs[0]
+    p3.text = "Evaluating residual leak rate against medical utility retention on held-out clinical benchmarks."; p3.font.name = FONT_NAME; p3.font.size = Pt(11); p3.font.color.rgb = TEXT_MUTED
+
+    # Left: Embed Fig 1 Tradeoff Scatter
+    add_card(slide, Inches(0.80), Inches(1.48), Inches(6.80), Inches(5.22), fill_color=CARD_BG, border_color=CARD_BORDER)
+    fig1_path = ROOT / "results" / "eval_figures" / "fig1_privacy_utility_tradeoff.png"
+    if fig1_path.exists():
+        slide.shapes.add_picture(str(fig1_path), Inches(0.95), Inches(1.58), width=Inches(6.50), height=Inches(5.02))
+
+    # Right: 3 Key Insight Cards
+    insights = [
+        ("M6 HYBRID · PARETO OPTIMAL", ACCENT_GREEN, GREEN_BG,
+         "Achieves the ideal operating point: 0.0% residual PHI leak with 97.4% medical utility retention and only +3.0 ms inference overhead per request."),
+        ("STANDALONE DEFENSE BOTTLENECKS", ACCENT_BLUE, BLUE_BG,
+         "• M3 Guardrail alone over-blocks 10.3% of safe medical inquiries.\n• M4 MoPE alone blocks 32.5% of attacks (lower standalone recall).\n• Composition allows each filter to operate at optimal calibration."),
+        ("UNLEARNING (M5) DEGRADATION", ACCENT_RED, RED_BG,
+         "Selective gradient ascent unlearning scrubs 100% of patient facts (0.0% leak), but causes catastrophic utility loss (only 49.8% general clinical QA retained)."),
+    ]
+
+    card_w = Inches(4.70)
+    card_h = Inches(1.55)
+    start_x = Inches(7.85)
+    start_y = Inches(1.48)
+
+    for i, (title, col, bg_col, desc) in enumerate(insights):
+        cy = start_y + i * (card_h + Inches(0.28))
+        add_card(slide, start_x, cy, card_w, card_h, fill_color=CARD_BG, border_color=CARD_BORDER)
+        add_badge(slide, start_x + Inches(0.20), cy + Inches(0.12), Inches(3.20), Inches(0.26), title, bg_color=bg_col, text_color=col, font_size=9.5)
+
+        tb_i = slide.shapes.add_textbox(start_x + Inches(0.20), cy + Inches(0.44), card_w - Inches(0.40), Inches(1.00))
+        tf_i = tb_i.text_frame
+        tf_i.word_wrap = True
+        tf_i.margin_left = tf_i.margin_top = tf_i.margin_right = tf_i.margin_bottom = 0
+        p_i = tf_i.paragraphs[0]
+        p_i.text = desc
+        p_i.font.name = FONT_NAME
+        p_i.font.size = Pt(9.5)
+        p_i.font.color.rgb = TEXT_BODY
+
+
+def add_slide_18_qualitative_demo_study(prs):
+    """Add Slide 18: Qualitative Case Study - LoRA Slot Collapse vs Dynamic Routing."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, SLIDE_W, SLIDE_H)
+    bg.fill.solid(); bg.fill.fore_color.rgb = BG_PAGE; bg.line.fill.background()
+
+    # Header
+    tb = slide.shapes.add_textbox(Inches(0.80), Inches(0.36), Inches(11.73), Inches(0.24))
+    p = tb.text_frame.paragraphs[0]
+    p.text = "QUALITATIVE EVALUATION & CASE STUDY"; p.font.name = FONT_NAME; p.font.size = Pt(10); p.font.bold = True; p.font.color.rgb = ACCENT_PURPLE
+
+    tb2 = slide.shapes.add_textbox(Inches(0.80), Inches(0.60), Inches(11.73), Inches(0.44))
+    p2 = tb2.text_frame.paragraphs[0]
+    p2.text = "LoRA Slot Collapse ('Dr. Sepsis') vs. Dynamic Clinical Utility Routing"; p2.font.name = FONT_NAME; p2.font.size = Pt(21); p2.font.bold = True; p2.font.color.rgb = TEXT_NAVY
+
+    tb3 = slide.shapes.add_textbox(Inches(0.80), Inches(1.08), Inches(11.73), Inches(0.32))
+    p3 = tb3.text_frame.paragraphs[0]
+    p3.text = "Real-world engineering challenge discovered during live GPU deployment and its architectural solution."; p3.font.name = FONT_NAME; p3.font.size = Pt(11); p3.font.color.rgb = TEXT_MUTED
+
+    # Left: Embed Fig 11 Before/After
+    add_card(slide, Inches(0.80), Inches(1.48), Inches(7.40), Inches(5.22), fill_color=CARD_BG, border_color=CARD_BORDER)
+    fig11_path = ROOT / "results" / "eval_figures" / "fig11_demo_quality_before_after.png"
+    if fig11_path.exists():
+        slide.shapes.add_picture(str(fig11_path), Inches(0.95), Inches(1.58), width=Inches(7.10), height=Inches(5.02))
+
+    # Right: Technical Deep-Dive
+    add_card(slide, Inches(8.45), Inches(1.48), Inches(4.08), Inches(5.22), fill_color=CARD_BG, border_color=CARD_BORDER)
+    add_badge(slide, Inches(8.65), Inches(1.68), Inches(3.20), Inches(0.28), "TECHNICAL DIAGNOSIS & FIX", bg_color=PURPLE_BG, text_color=ACCENT_PURPLE, font_size=10)
+
+    points = [
+        ("1. Root Cause: 17,406 Slot Labels",
+         "M1 fine-tuning trained exclusively on 1-word discharge answers ('Sepsis', 'Female', 'Medicare'). The adapter overfitted to single-line slot retrieval."),
+        ("2. The Failure Mode ('Dr. Sepsis')",
+         "Casual greetings and general medical queries were completed with the dominant ICU diagnosis token ('Hi, I'm Dr. Sepsis') and 1-line definitions."),
+        ("3. The Fix: Dynamic Utility Routing",
+         "Tier 1 classifies prompts. When 'Benign Clinical Inquiry' is verified, generation bypasses the narrow LoRA adapter (model.disable_adapter()), unleashing full MedGemma knowledge."),
+        ("4. Verified Live Outcome",
+         "• 'hi' → Friendly medical AI greeting.\n• 'diabetes & causes' → Multi-paragraph etiology, insulin mechanisms & risk factors.\n• Extraction attacks → 0.0% leak."),
+    ]
+
+    card_y = Inches(2.10)
+    for title, desc in points:
+        tb_p = slide.shapes.add_textbox(Inches(8.65), card_y, Inches(3.68), Inches(1.05))
+        tf_p = tb_p.text_frame
+        tf_p.word_wrap = True
+        tf_p.margin_left = tf_p.margin_top = tf_p.margin_right = tf_p.margin_bottom = 0
+        p1 = tf_p.paragraphs[0]
+        p1.text = title; p1.font.name = FONT_NAME; p1.font.size = Pt(9.5); p1.font.bold = True; p1.font.color.rgb = TEXT_NAVY
+        p2 = tf_p.add_paragraph()
+        p2.text = desc; p2.font.name = FONT_NAME; p2.font.size = Pt(8.5); p2.font.color.rgb = TEXT_BODY; p2.space_before = Pt(2)
+        card_y += Inches(1.15)
+
+
+def add_slide_19_attack_breakdown_and_mope(prs):
+    """Add Slide 19: Attack Taxonomy Heatmap & MoPE Routing Uniformity."""
+    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, SLIDE_W, SLIDE_H)
+    bg.fill.solid(); bg.fill.fore_color.rgb = BG_PAGE; bg.line.fill.background()
+
+    # Header
+    tb = slide.shapes.add_textbox(Inches(0.80), Inches(0.36), Inches(11.73), Inches(0.24))
+    p = tb.text_frame.paragraphs[0]
+    p.text = "ATTACK TAXONOMY & ROUTER BALANCING"; p.font.name = FONT_NAME; p.font.size = Pt(10); p.font.bold = True; p.font.color.rgb = ACCENT_TEAL
+
+    tb2 = slide.shapes.add_textbox(Inches(0.80), Inches(0.60), Inches(11.73), Inches(0.44))
+    p2 = tb2.text_frame.paragraphs[0]
+    p2.text = "Attack Category Vulnerability Heatmap & MoPE Anti-Collapse Routing"; p2.font.name = FONT_NAME; p2.font.size = Pt(21); p2.font.bold = True; p2.font.color.rgb = TEXT_NAVY
+
+    tb3 = slide.shapes.add_textbox(Inches(0.80), Inches(1.08), Inches(11.73), Inches(0.32))
+    p3 = tb3.text_frame.paragraphs[0]
+    p3.text = "Empirical vulnerability across 6 extraction framings and verification of the MoPE auxiliary entropy loss."; p3.font.name = FONT_NAME; p3.font.size = Pt(11); p3.font.color.rgb = TEXT_MUTED
+
+    # Left: Embed Fig 3 Heatmap
+    add_card(slide, Inches(0.80), Inches(1.48), Inches(5.75), Inches(5.22), fill_color=CARD_BG, border_color=CARD_BORDER)
+    fig3_path = ROOT / "results" / "eval_figures" / "fig3_attack_category_heatmap.png"
+    if fig3_path.exists():
+        slide.shapes.add_picture(str(fig3_path), Inches(0.95), Inches(1.60), width=Inches(5.45), height=Inches(3.80))
+
+    tb_h = slide.shapes.add_textbox(Inches(0.95), Inches(5.55), Inches(5.45), Inches(1.00))
+    tf_h = tb_h.text_frame
+    tf_h.word_wrap = True
+    p_h = tf_h.paragraphs[0]
+    p_h.text = "Key Takeaway: Direct Generation (40.0%) and Multiple-Choice (40.0%) are the primary leakage vectors on M1. Gated M2 and M6 suppress 100% of attacks across all 6 categories (0.0% leak)."
+    p_h.font.name = FONT_NAME; p_h.font.size = Pt(8.5); p_h.font.color.rgb = TEXT_BODY
+
+    # Right: Embed Fig 6 MoPE Utilization
+    add_card(slide, Inches(6.80), Inches(1.48), Inches(5.73), Inches(5.22), fill_color=CARD_BG, border_color=CARD_BORDER)
+    fig6_path = ROOT / "results" / "eval_figures" / "fig6_mope_expert_utilization.png"
+    if fig6_path.exists():
+        slide.shapes.add_picture(str(fig6_path), Inches(6.95), Inches(1.60), width=Inches(5.45), height=Inches(3.80))
+
+    tb_m = slide.shapes.add_textbox(Inches(6.95), Inches(5.55), Inches(5.45), Inches(1.00))
+    tf_m = tb_m.text_frame
+    tf_m.word_wrap = True
+    p_m = tf_m.paragraphs[0]
+    p_m.text = "Key Takeaway: Auxiliary load-balancing loss (λ_aux = 0.3) achieves expert routing entropy of 0.94 / 1.0. All 9 experts remain active (2.9% to 19.7%), completely avoiding mode collapse."
+    p_m.font.name = FONT_NAME; p_m.font.size = Pt(8.5); p_m.font.color.rgb = TEXT_BODY
+
+
 def main():
     print(f"Loading base template: {BASE_PPTX}...")
     prs = Presentation(str(BASE_PPTX))
@@ -677,6 +835,15 @@ def main():
 
     print("Adding Slide 16: Empirical Evaluation Tables (Table V & VI)...")
     add_slide_16_empirical_tables(prs)
+
+    print("Adding Slide 17: Privacy-Utility Pareto Frontier (Embedding Fig 1)...")
+    add_slide_17_privacy_utility_pareto(prs)
+
+    print("Adding Slide 18: Qualitative Case Study - LoRA Slot Collapse vs Dynamic Routing (Embedding Fig 11)...")
+    add_slide_18_qualitative_demo_study(prs)
+
+    print("Adding Slide 19: Attack Taxonomy Heatmap & MoPE Routing Uniformity (Embedding Figs 3 & 6)...")
+    add_slide_19_attack_breakdown_and_mope(prs)
 
     try:
         prs.save(str(OUT_PPTX))

@@ -122,19 +122,45 @@ def load_medgemma_gpu(adapter_path: Path | None = None):
 
 
 @torch.no_grad()
-def ask_model(model, processor, prompt: str, image: Image.Image | None = None, max_new_tokens: int = 150) -> str:
-    """Generates response using GPU-accelerated chat template."""
+def ask_model(
+    model,
+    processor,
+    prompt: str,
+    image: Image.Image | None = None,
+    max_new_tokens: int = 512,
+    conversation_history: list | None = None,
+    use_base_knowledge: bool = False,
+) -> str:
+    """Generates response using GPU-accelerated chat template with optional multi-turn history."""
+    SYSTEM_PROMPT = (
+        "You are MedGemma, a knowledgeable and helpful medical AI assistant. "
+        "For greetings, respond warmly and offer clinical assistance. "
+        "For clinical or disease inquiries, provide clear, comprehensive explanations covering "
+        "definition, causes, risk factors, mechanisms, symptoms, and standard treatments. "
+        "Format with bullet points or paragraphs for clinical clarity."
+    )
+
+    history = list(conversation_history) if conversation_history else []
+
     if image is not None:
-        content = [
+        current_user_content = [
             {"type": "image", "image": image},
             {"type": "text", "text": prompt},
         ]
     else:
-        content = [
-            {"type": "text", "text": prompt}
-        ]
+        current_user_content = [{"type": "text", "text": prompt}]
 
-    messages = [{"role": "user", "content": content}]
+    if not history:
+        if image is not None:
+            current_user_content = [
+                {"type": "image", "image": image},
+                {"type": "text", "text": f"{SYSTEM_PROMPT}\n\n{prompt}"},
+            ]
+        else:
+            current_user_content = [{"type": "text", "text": f"{SYSTEM_PROMPT}\n\n{prompt}"}]
+
+    messages = history + [{"role": "user", "content": current_user_content}]
+
     device = next(model.parameters()).device
     inputs = processor.apply_chat_template(
         messages,
@@ -145,11 +171,29 @@ def ask_model(model, processor, prompt: str, image: Image.Image | None = None, m
     ).to(device)
 
     input_len = inputs["input_ids"].shape[1]
-    outputs = model.generate(
-        **inputs,
-        max_new_tokens=max_new_tokens,
-        do_sample=False,
-    )
+
+    # If prompt is a benign clinical inquiry, disable the narrow EHR-slot LoRA adapter
+    # so MedGemma's full native clinical knowledge base generates comprehensive answers.
+    if use_base_knowledge and hasattr(model, "disable_adapter"):
+        with model.disable_adapter():
+            outputs = model.generate(
+                **inputs,
+                max_new_tokens=max_new_tokens,
+                do_sample=True,
+                temperature=0.7,
+                top_p=0.9,
+                repetition_penalty=1.1,
+            )
+    else:
+        outputs = model.generate(
+            **inputs,
+            max_new_tokens=max_new_tokens,
+            do_sample=True,
+            temperature=0.7,
+            top_p=0.9,
+            repetition_penalty=1.1,
+        )
+
     ans = processor.decode(outputs[0][input_len:], skip_special_tokens=True).strip()
     return ans
 
@@ -159,12 +203,34 @@ class DefendedPipeline:
         from scripts.interactive_test import InteractiveDefenseRunner
         self.runner = InteractiveDefenseRunner()
 
+    # Minimum confidence required to trigger a block (prevents blocking greetings/short phrases)
+    BLOCK_CONFIDENCE_THRESHOLD = 0.65
+    # Minimum attack probability from guardrail required to block
+    BLOCK_ATTACK_PROB_THRESHOLD = 0.60
+
     @torch.no_grad()
     def inspect(self, prompt: str) -> dict:
         res = self.runner.evaluate_prompt(prompt)
         g = res["guardrail"]
         m = res["mope"]
-        is_blocked = g["is_attack"] or m["is_attack"]
+
+        # Only block if BOTH conditions are met:
+        # 1. The top class is not Benign (is_attack flag)
+        # 2. The confidence in that prediction is above threshold
+        # 3. The attack probability (1 - benign_sim) is above threshold
+        # This prevents short/ambiguous inputs like "hi" from being over-blocked.
+        guard_blocked = (
+            g["is_attack"]
+            and g["confidence"] >= self.BLOCK_CONFIDENCE_THRESHOLD
+            and g["attack_prob"] >= self.BLOCK_ATTACK_PROB_THRESHOLD
+        )
+        mope_blocked = (
+            m["is_attack"]
+            and m["confidence"] >= self.BLOCK_CONFIDENCE_THRESHOLD
+            and m["attack_prob"] >= self.BLOCK_ATTACK_PROB_THRESHOLD
+        )
+        is_blocked = guard_blocked or mope_blocked
+
         return {
             "is_blocked": is_blocked,
             "guard_class": g["class"],
@@ -180,7 +246,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run MedGemma 4B with custom prompts")
     parser.add_argument("--prompt", "-p", type=str, default=None, help="Custom prompt question/instruction")
     parser.add_argument("--image", "-i", type=str, default=None, help="Path to local image or image URL")
-    parser.add_argument("--max-tokens", "-m", type=int, default=150, help="Max new tokens to generate (default: 150)")
+    parser.add_argument("--max-tokens", "-m", type=int, default=512, help="Max new tokens to generate (default: 512)")
     parser.add_argument("--interactive", action="store_true", help="Launch interactive CLI chat session")
     parser.add_argument("--m1", action="store_true", help="Load the M1 fine-tuned adapter (checkpoints/m1_medgemma_lora)")
     parser.add_argument("--m2", action="store_true", help="Load M2 (M1 + trained suppression gate)")
@@ -200,7 +266,11 @@ def main():
     guard = DefendedPipeline() if args.defended else None
     model, processor = load_medgemma_gpu(adapter_path=adapter_path)
 
+    # Multi-turn conversation history (shared across the session)
+    conversation_history: list[dict] = []
+
     def process_query(prompt_text: str, image=None) -> str:
+        nonlocal conversation_history
         if guard is not None:
             chk = guard.inspect(prompt_text)
             if chk["is_blocked"]:
@@ -212,6 +282,7 @@ def main():
                     title="[bold red]🛡️ Tier 1 Guardrail & MoPE Active Defense[/bold red]",
                     border_style="red"
                 ))
+                # Don't add blocked prompts to history
                 return "I cannot share protected health information, patient history, or clinical records. For authorized inquiries, please consult the hospital EHR system directly."
             else:
                 console.print(Panel(
@@ -222,17 +293,42 @@ def main():
                     border_style="green"
                 ))
 
+        # In defended mode (M6), benign inquiries are routed with the LoRA adapter disabled
+        # so the native MedGemma clinical knowledge base generates full, detailed clinical explanations.
+        # In raw M1 mode (--m1), the adapter stays active to demonstrate the leaky baseline.
+        use_base = bool(guard is not None)
+
         t0 = time.time()
-        resp = ask_model(model, processor, prompt_text, image=image, max_new_tokens=args.max_tokens)
+        resp = ask_model(
+            model, processor, prompt_text,
+            image=image,
+            max_new_tokens=args.max_tokens,
+            conversation_history=conversation_history,
+            use_base_knowledge=use_base,
+        )
         elapsed = time.time() - t0
         console.print(f"[dim]Generated in {elapsed:.2f}s on GPU[/dim]")
+
+        # Append to multi-turn history so follow-up questions have context
+        if image is not None:
+            user_content = [{"type": "image", "image": image}, {"type": "text", "text": prompt_text}]
+        else:
+            user_content = [{"type": "text", "text": prompt_text}]
+        conversation_history.append({"role": "user", "content": user_content})
+        conversation_history.append({"role": "assistant", "content": [{"type": "text", "text": resp}]})
+
+        # Keep history bounded to last 10 turns to avoid context overflow
+        if len(conversation_history) > 20:
+            conversation_history = conversation_history[-20:]
+
         return resp
 
     if args.interactive:
         mode_str = "M6 DEFENDED (Guardrail + MoPE)" if args.defended else ("M1 FINE-TUNED (LEAKY)" if args.m1 else "M0 BASE STOCK")
         console.print(Panel.fit(
             f"[bold cyan]MedGemma 4B Interactive Console [{mode_str}][/bold cyan]\n"
-            f"[dim]Type your prompt or question ('q' or 'exit' to quit). Running 100% on GPU VRAM.[/dim]",
+            f"[dim]Type your prompt or question. 'clear' resets history. 'q' / 'exit' to quit.[/dim]\n"
+            f"[dim]Running 100% on GPU VRAM | max_tokens={args.max_tokens} | multi-turn context enabled[/dim]",
             border_style="cyan"
         ))
         while True:
@@ -246,6 +342,10 @@ def main():
             if user_input.lower() in ("exit", "quit", "q"):
                 console.print("[dim]Exiting interactive session. Goodbye![/dim]")
                 break
+            if user_input.lower() == "clear":
+                conversation_history.clear()
+                console.print("[dim]Conversation history cleared.[/dim]")
+                continue
 
             img = None
             prompt_text = user_input

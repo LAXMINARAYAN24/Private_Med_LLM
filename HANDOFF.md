@@ -5,8 +5,8 @@
 > ~~struck-through text~~ followed by `[Updated: ...]` so the history of a
 > decision is visible, not erased. Search for `[Updated:` to find every change.
 
-Last updated: 2026-08-29. Author of this build session: automated (Claude Code),
-for user mehul.jain@joveo.com. HF account used to pull Llama: `Harshul21-12`.
+Last updated: 2026-10-06. Project: IT488 Medical LLM Privacy Defense.
+
 
 ---
 
