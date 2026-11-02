@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedShield AI — End-to-End Pipeline Architecture & Module Reference</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Mermaid.js for Interactive Flowchart Rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root, [data-theme="dark"] {
+      --bg-base: #0a0b0e;
+      --bg-surface: #12141a;
+      --bg-surface-elevated: #1a1d24;
+      --bg-card: #151821;
+      --bg-card-hover: #1e222e;
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-active: rgba(56, 189, 248, 0.45);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+      --accent-cyan: #38bdf8;
+      --accent-green: #34d399;
+      --accent-purple: #a78bfa;
+      --accent-amber: #fbbf24;
+      --accent-red: #f87171;
+      --code-bg: rgba(0, 0, 0, 0.45);
+      --chart-bg: #0f1117;
+      --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.7);
+    }
+
+    [data-theme="light"] {
+      --bg-base: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-surface-elevated: #f1f5f9;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f1f5f9;
+      --border-subtle: rgba(0, 0, 0, 0.09);
+      --border-active: rgba(2, 132, 199, 0.5);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #94a3b8;
+      --accent-cyan: #0284c7;
+      --accent-green: #059669;
+      --accent-purple: #7c3aed;
+      --accent-amber: #d97706;
+      --accent-red: #dc2626;
+      --code-bg: rgba(0, 0, 0, 0.05);
+      --chart-bg: #f8fafc;
+      --shadow-lg: 0 15px 30px -10px rgba(0, 0, 0, 0.12);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background-color: var(--bg-base);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    header {
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-title { display: flex; align-items: center; gap: 12px; }
+    .brand-badge {
+      background: linear-gradient(135deg, #0284c7 0%, #10b981 100%);
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .theme-btn {
+      background: var(--bg-surface-elevated);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .theme-btn:hover { border-color: var(--border-active); }
+
+    .app-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.25fr 0.85fr;
+      gap: 20px;
+      padding: 20px 28px 40px;
+      max-width: 1780px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    @media (max-width: 1200px) {
+      .app-container { grid-template-columns: 1fr; }
+    }
+
+    .panel-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Tab switcher for Chart vs Cards */
+    .view-mode-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: 12px;
+    }
+
+    .tab-pills {
+      display: flex;
+      gap: 6px;
+      background: var(--bg-surface-elevated);
+      padding: 3px;
+      border-radius: 8px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .tab-pill-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+
+    .tab-pill-btn.active {
+      background: var(--bg-surface);
+      color: var(--accent-cyan);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Mermaid Flowchart Container */
+    .flowchart-viewport {
+      background: var(--chart-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 580px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .flowchart-viewport svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Interactive node cursor */
+    .flowchart-viewport svg .node {
+      cursor: pointer !important;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+    .flowchart-viewport svg .node:hover {
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+    }
+
+    /* Zoom / Controls overlay */
+    .chart-controls {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      display: flex;
+      gap: 6px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .chart-ctrl-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .chart-ctrl-btn:hover { background: var(--bg-surface-elevated); color: var(--text-main); }
+
+    /* Right: Interactive Module & Function Reference */
+    .reference-view { display: flex; flex-direction: column; gap: 16px; }
+    .selector-container { display: flex; flex-direction: column; gap: 8px; }
+    
+    .module-select-dropdown {
+      width: 100%;
+      background: var(--bg-surface-elevated);
+      color: var(--text-main);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      outline: none;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .module-select-dropdown:focus { border-color: var(--accent-cyan); }
+
+    .module-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .module-header-box { border-bottom: 1px solid var(--border-subtle); padding-bottom: 16px; }
+    
+    .module-path-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-cyan);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      padding: 3px 9px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .module-summary-line { font-size: 0.95rem; font-weight: 700; color: var(--text-main); line-height: 1.5; }
+    .module-role-desc { font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; margin-top: 6px; }
+
+    .function-list-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .function-items {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 540px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .func-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      transition: all 0.15s ease;
+    }
+    .func-card:hover { background: var(--bg-card-hover); border-color: rgba(255, 255, 255, 0.15); }
+
+    .func-signature {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .func-badge-class {
+      background: rgba(167, 139, 250, 0.15);
+      color: var(--accent-purple);
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .func-badge-method {
+      background: rgba(52, 211, 153, 0.15);
+      color: var(--accent-green);
+      font-size: 0.65rem;
+      padding: 1px 5px;
+      border-radius: 4px;
+    }
+
+    .func-explanation { font-size: 0.78rem; color: var(--text-muted); line-height: 1.45; }
+
+    .metric-badge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+    .metric-box {
+      background: var(--code-bg);
+      border: 1px solid var(--border-subtle);
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .metric-val { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 0.85rem; color: var(--text-main); }
+    .metric-lbl { font-size: 0.65rem; color: var(--text-dim); margin-top: 2px; text-transform: uppercase; }
+
+    /* Step Cards Alternative View */
+    .flow-diagram-cards { display: none; flex-direction: column; gap: 10px; }
+    .flow-node {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.15s ease;
+    }
+    .flow-node:hover { background: var(--bg-card-hover); border-color: var(--border-active); }
+    .flow-node.selected { border-color: var(--accent-cyan); background: rgba(56, 189, 248, 0.08); }
+    .flow-node-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      background: var(--bg-surface);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand-title">
+      <div class="brand-badge">
+        <i data-lucide="shield-check" style="width: 22px; height: 22px;"></i>
+      </div>
+      <div>
+        <div style="font-weight: 800; font-size: 1.05rem; letter-spacing: -0.02em;">MedShield AI Pipeline Architecture</div>
+        <div style="font-size: 0.72rem; color: var(--text-muted);">Interactive End-to-End Flowchart & Single-Line Module Reference</div>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="theme-btn" onclick="toggleTheme()">
+        <i data-lucide="sun-moon" style="width: 15px; height: 15px;"></i>
+        <span id="theme-btn-label">Light Theme</span>
+      </button>
+      <a href="pipeline_flowchart.png" download="medshield_pipeline_flowchart.png" style="text-decoration: none;" class="theme-btn" title="Download High-Resolution PNG Image">
+        <i data-lucide="download" style="width: 15px; height: 15px;"></i>
+        <span>Flowchart Image (PNG)</span>
+      </a>
+      <a href="../STRUCTURE.md" style="text-decoration: none;" class="theme-btn" title="View STRUCTURE.md">
+        <i data-lucide="file-text" style="width: 15px; height: 15px;"></i>
+        <span>STRUCTURE.md</span>
+      </a>
+      <a href="../docs/pipeline_flowchart.md" style="text-decoration: none;" class="theme-btn" title="View Markdown Flowchart">
+        <i data-lucide="git-branch" style="width: 15px; height: 15px;"></i>
+        <span>Flowchart.md</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- App Shell -->
+  <div class="app-container">
+
+    <!-- LEFT COLUMN: The Master Pipeline Flowchart Overview -->
+    <div class="pipeline-view">
+      <div class="panel-card">
+        
+        <div class="view-mode-bar">
+          <div>
+            <h2 style="font-size: 1.05rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+              <i data-lucide="git-merge" style="width: 18px; height: 18px; color: var(--accent-cyan);"></i>
+              <span>Pipeline Flowchart Overview</span>
+            </h2>
+            <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">
+              💡 <strong>Interactive Diagram:</strong> Click any node in the flowchart to inspect its underlying module and all single-line function breakdowns.
+            </p>
+          </div>
+
+          <div class="tab-pills">
+            <button class="tab-pill-btn active" id="btn-view-chart" onclick="setViewMode('chart')">
+              <i data-lucide="network" style="width: 13px; height: 13px;"></i>
+              <span>Interactive Flowchart</span>
+            </button>
+            <button class="tab-pill-btn" id="btn-view-cards" onclick="setViewMode('cards')">
+              <i data-lucide="list" style="width: 13px; height: 13px;"></i>
+              <span>Step-by-Step Cards</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 1. Interactive Flowchart View (Mermaid Graph) -->
+        <div id="chart-view-container" class="flowchart-viewport">
+          <div class="mermaid" id="mermaid-flowchart">
+flowchart TD
+    subgraph Ingest ["1. Ingestion Gateway"]
+        Q["Clinician / Attacker Query"] --> API["FastAPI Endpoint\n(src/dashboard/app.py)"]
+    end
+
+    subgraph Tier1 ["2. Tier-1 Prompt-Boundary Defense"]
+        API --> G["Contrastive Prototype Guardrail\n(src/phi_defense/guardrail.py)"]
+        G -->|"Cosine Similarity Vector"| T{"Threshold Gate\n(τ = 0.521)"}
+        T -->|"Cosine Sim > τ & PHI Target"| REF["Instant Privacy Refusal\n(2.8 ms, 0% Leak, Zero GPU Cost)"]
+        T -->|"Cosine Sim ≤ τ"| MOPE["MoPE 9-Head Dynamic Router\n(src/phi_defense/mope.py)"]
+        MOPE -->|"Entropy Regularization (H = 0.94)"| DISP["Threat Category Dispatch\n(#0 Benign ... #8 Roleplay)"]
+    end
+
+    subgraph Dispatch ["3. Dynamic Utility Dispatch"]
+        DISP -->|"High-Confidence Benign Clinical Query"| FAST["Direct Forward Fastpath\n(100% Diagnostic Utility)"]
+        DISP -->|"Ambiguous / Extraction Probe"| ARM["Arm Tier-2 Suppression Hooks"]
+    end
+
+    subgraph Tier2 ["4. Tier-2 In-Decoder Attention Gate"]
+        ARM --> GATE["Decoder Self-Attention Hooks [n/4, 3n/4)\n(src/phi_defense/gate.py)"]
+        GATE -->|"Zero Logits for Patient Tokens"| SUPP["Token-Level Suppression\n(0.0% Leak Rate, +1.2 ms)"]
+    end
+
+    subgraph Backbone ["5. Generative Clinical Backbone"]
+        FAST --> MEDGEMMA["Google MedGemma-4B-IT (4-bit NF4)\n(src/phi_defense/models.py)"]
+        SUPP --> MEDGEMMA
+        MEDGEMMA --> OUT["Safe Clinical Diagnostic Response\n(Zero HIPAA Disclosure)"]
+    end
+
+    subgraph Telemetry ["6. Live Workstation Telemetry"]
+        G -.-> TEL["Defense & MoPE Inspector Drawer"]
+        MOPE -.-> TEL
+        MEDGEMMA -.-> TEL
+        TEL --> RADAR["MediRed+ Radar Chart &\nExpert Utilization Histogram"]
+    end
+
+    click API call window.selectModuleFromChart('src/dashboard/app.py') "Inspect FastAPI Gateway"
+    click G call window.selectModuleFromChart('src/phi_defense/guardrail.py') "Inspect Contrastive Guardrail"
+    click MOPE call window.selectModuleFromChart('src/phi_defense/mope.py') "Inspect MoPE Router"
+    click GATE call window.selectModuleFromChart('src/phi_defense/gate.py') "Inspect Tier-2 Attention Gate"
+    click MEDGEMMA call window.selectModuleFromChart('src/phi_defense/models.py') "Inspect MedGemma Backbone"
+    click TEL call window.selectModuleFromChart('src/dashboard/app.py') "Inspect Telemetry API"
+    click RADAR call window.selectModuleFromChart('src/dashboard/app.py') "Inspect Radar Telemetry"
+
+    style Q fill:#1e293b,stroke:#475569,stroke-width:2px,color:#f8fafc
+    style API fill:#0369a1,stroke:#38bdf8,stroke-width:2px,color:#ffffff
+    style G fill:#047857,stroke:#34d399,stroke-width:2px,color:#ffffff
+    style T fill:#b45309,stroke:#fbbf24,stroke-width:2px,color:#ffffff
+    style REF fill:#b91c1c,stroke:#f87171,stroke-width:2px,color:#ffffff
+    style MOPE fill:#6d28d9,stroke:#a78bfa,stroke-width:2px,color:#ffffff
+    style DISP fill:#4338ca,stroke:#818cf8,stroke-width:2px,color:#ffffff
+    style FAST fill:#047857,stroke:#34d399,stroke-width:2px,color:#ffffff
+    style ARM fill:#c2410c,stroke:#fb923c,stroke-width:2px,color:#ffffff
+    style GATE fill:#0f766e,stroke:#2dd4bf,stroke-width:2px,color:#ffffff
+    style SUPP fill:#047857,stroke:#34d399,stroke-width:2px,color:#ffffff
+    style MEDGEMMA fill:#1e3a8a,stroke:#60a5fa,stroke-width:2px,color:#ffffff
+    style OUT fill:#047857,stroke:#34d399,stroke-width:2px,color:#ffffff
+    style TEL fill:#1e1b4b,stroke:#818cf8,stroke-width:1px,color:#e0e7ff
+    style RADAR fill:#111827,stroke:#374151,stroke-width:1px,color:#9ca3af
+          </div>
+
+          <!-- Quick Zoom Controls -->
+          <div class="chart-controls">
+            <button class="chart-ctrl-btn" onclick="zoomFlowchart(1.15)" title="Zoom In">+</button>
+            <button class="chart-ctrl-btn" onclick="zoomFlowchart(0.85)" title="Zoom Out">−</button>
+            <button class="chart-ctrl-btn" onclick="resetZoomFlowchart()" title="Fit to Screen">⟲</button>
+          </div>
+        </div>
+
+        <!-- 2. Alternative Step-by-Step Cards List -->
+        <div id="cards-view-container" class="flow-diagram-cards">
+          <!-- Populated by JS -->
+        </div>
+
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN: Dropdown & Single-Line Function Explanations -->
+    <div class="reference-view">
+      <div class="selector-container">
+        <label for="module-select" style="font-size: 0.75rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.05em;">
+          Select Module to Inspect:
+        </label>
+        <select id="module-select" class="module-select-dropdown" onchange="onModuleDropdownChange(this.value)">
+          <!-- Populated dynamically -->
+        </select>
+      </div>
+
+      <!-- Active Module Detail Card -->
+      <div class="module-card" id="module-detail-card">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Academic Footer -->
+  <footer>
+    <div>
+      <strong>NITK Surathkal</strong> · Department of Information Technology · <em>Harshul Jain (231IT025) · Laxminarayan Sahu (231IT035) · Nikhil Agarwal (231IT044)</em>
+    </div>
+    <div style="font-family: 'JetBrains Mono', monospace;">
+      MedShield AI v2.9 · Google MedGemma-4B-IT Defense Framework
+    </div>
+  </footer>
+
+  <!-- Script Logic -->
+  <script>
+    const PIPELINE_NODES = [
+      {
+        id: "input",
+        title: "1. Clinical Input & Adversarial Ingestion",
+        tier: "api",
+        tierLabel: "Gateway",
+        tierColor: "#38bdf8",
+        icon: "terminal",
+        iconBg: "linear-gradient(135deg, #0284c7, #38bdf8)",
+        moduleId: "src/dashboard/app.py",
+        desc: "Ingests raw clinician queries, emergency prompts, or adversarial MIMIC-III extraction probes via FastAPI.",
+        latency: "0.2 ms",
+        target: "FastAPI / Uvicorn",
+        passRate: "100% Ingest"
+      },
+      {
+        id: "guardrail",
+        title: "2. Tier 1: Contrastive Prototype Guardrail",
+        tier: "tier1",
+        tierLabel: "Tier 1 Guardrail",
+        tierColor: "#34d399",
+        icon: "shield-alert",
+        iconBg: "linear-gradient(135deg, #059669, #34d399)",
+        moduleId: "src/phi_defense/guardrail.py",
+        desc: "Maps queries into 384-D latent space via all-MiniLM-L6-v2; computes cosine similarity to MediRed+ prototypes with decision threshold τ=0.521.",
+        latency: "2.1 ms",
+        target: "all-MiniLM-L6-v2",
+        passRate: "100% Attack Block"
+      },
+      {
+        id: "mope",
+        title: "3. Tier 1: Mixture-of-Pretext Experts (MoPE) Router",
+        tier: "tier1",
+        tierLabel: "Tier 1 MoPE",
+        tierColor: "#a78bfa",
+        icon: "cpu",
+        iconBg: "linear-gradient(135deg, #7c3aed, #a78bfa)",
+        moduleId: "src/phi_defense/mope.py",
+        desc: "Dispatches 384-D query representation to 9 specialized classification heads trained with auxiliary entropy loss (H=0.94) to eliminate single-expert collapse.",
+        latency: "2.5 ms",
+        target: "9 Router Heads",
+        passRate: "0.0% False Block"
+      },
+      {
+        id: "decision",
+        title: "4. Dynamic Utility Routing Decision",
+        tier: "tier1",
+        tierLabel: "Dynamic Router",
+        tierColor: "#fbbf24",
+        icon: "split",
+        iconBg: "linear-gradient(135deg, #d97706, #fbbf24)",
+        moduleId: "src/phi_defense/guardrail.py",
+        desc: "High-confidence benign queries bypass suppression for full medical diagnostic fluency; targeted extraction queries are immediately intercepted before GPU forward pass.",
+        latency: "0.1 ms",
+        target: "Zero-GPU Fastpath",
+        passRate: "100% Benign Utility"
+      },
+      {
+        id: "gate",
+        title: "5. Tier 2: In-Decoder Attention Suppression Gate",
+        tier: "tier2",
+        tierLabel: "Tier 2 Gate",
+        tierColor: "#34d399",
+        icon: "lock",
+        iconBg: "linear-gradient(135deg, #059669, #10b981)",
+        moduleId: "src/phi_defense/gate.py",
+        desc: "Arms dynamic attention suppression hooks on middle decoder layers [n/4, 3n/4), zeroing out memorized patient tokens in autoregressive forward pass.",
+        latency: "+1.2 ms",
+        target: "Decoder Layers [7, 21)",
+        passRate: "0.0% Leak Rate"
+      },
+      {
+        id: "model",
+        title: "6. MedGemma-4B-IT Generative Backbone",
+        tier: "model",
+        tierLabel: "4-bit NF4",
+        tierColor: "#38bdf8",
+        icon: "sparkles",
+        iconBg: "linear-gradient(135deg, #0284c7, #10b981)",
+        moduleId: "src/phi_defense/models.py",
+        desc: "Google MedGemma-4B-IT quantized via BitsAndBytes 4-bit NF4 with Rank-16 LoRA adapter executing clinical diagnosis with zero PHI leakage.",
+        latency: "38 ms / token",
+        target: "RTX 4050 (3.51 GB)",
+        passRate: "97.4% Utility"
+      },
+      {
+        id: "telemetry",
+        title: "7. Defense & MoPE Inspector Telemetry",
+        tier: "api",
+        tierLabel: "Telemetry Stream",
+        tierColor: "#a78bfa",
+        icon: "activity",
+        iconBg: "linear-gradient(135deg, #7c3aed, #ec4899)",
+        moduleId: "src/dashboard/app.py",
+        desc: "Streams 9-class prototype radar coordinates, entropy distribution, latency, and HIPAA verification verdict to workstation UI in real-time.",
+        latency: "<1.0 ms",
+        target: "REST / JSON API",
+        passRate: "Live Inspection"
+      }
+    ];
+
+    const MODULE_REGISTRY = {
+      "src/phi_defense/guardrail.py": {
+        name: "guardrail.py",
+        tier: "Tier 1 Contrastive Defense",
+        singleLineSummary: "Dual-encoder embedding classifier comparing query cosine similarity against 9 MediRed+ prototype centroids with decision threshold τ=0.521.",
+        role: "Forms the outer prompt-boundary defensive perimeter. Transforms clinician queries into 384-dimensional normalized latent space, calculating vector distances against calibrated threat centroids to block adversarial extraction before GPU computation starts.",
+        latency: "2.1 ms",
+        memory: "120 MB RAM",
+        accuracy: "98.2% F1",
+        functions: [
+          { name: "class Encoder", type: "class", exp: "PyTorch dual-encoder model wrapping all-MiniLM-L6-v2 with mean-pooling and L2 normalization." },
+          { name: "load_medired_plus()", type: "func", exp: "Loads and validates the 9-class MediRed+ threat taxonomy dataset (1,329 test samples)." },
+          { name: "supcon_loss(features, labels)", type: "func", exp: "Computes Supervised Contrastive loss pulling same-threat representations together while pushing safe medical queries away." },
+          { name: "compute_prototypes(embeddings, labels)", type: "func", exp: "Calculates normalized class prototype centroids μ_c for all 8 extraction modes and the benign class." },
+          { name: "classify(query_emb, prototypes)", type: "func", exp: "Computes cosine similarities to prototype centroids and returns nearest threat class and confidence score." },
+          { name: "class GuardrailFilter", type: "class", exp: "Inference-time filtering wrapper executing calibrated thresholding (τ=0.521) for prompt boundary gating." },
+          { name: "GuardrailFilter.blocks(text)", type: "func", exp: "Returns True if prompt cosine similarity exceeds threshold τ on patient extraction classes, triggering instant refusal." },
+          { name: "evaluate_guardrail_as_defense()", type: "func", exp: "Computes empirical evaluation metrics: 100% attack block rate, 10.3% false-block rate (when unassisted by MoPE)." }
+        ]
+      },
+      "src/phi_defense/mope.py": {
+        name: "mope.py",
+        tier: "Tier 1 Dynamic MoPE Router",
+        singleLineSummary: "Mixture-of-Pretext Experts routing queries across 9 specialized classification heads with entropy dispersion regularization (H=0.94).",
+        role: "Eliminates prototype ambiguity by utilizing 9 dedicated classification experts. Auxiliary dispersion loss (λ=0.3) prevents single-expert collapse, allowing fine-grained classification across deceptive pretexts, emergency claims, and clinical queries.",
+        latency: "2.5 ms",
+        memory: "150 MB RAM",
+        accuracy: "Entropy: 0.94",
+        functions: [
+          { name: "class MoPE", type: "class", exp: "Core neural Mixture-of-Pretext Experts network housing 9 parallel linear classification projection heads." },
+          { name: "MoPE.forward(x)", type: "func", exp: "Forward pass computing routing logits, softmax gating weights, and dispatching representations across expert heads." },
+          { name: "MoPE.load_balance_loss()", type: "func", exp: "Calculates auxiliary dispersion loss regularizing entropy (H=0.94) to enforce balanced expert capacity." },
+          { name: "class MoPEClassifier", type: "class", exp: "End-to-end classifier wrapper combining MiniLM embedding extraction with MoPE dynamic routing dispatch." },
+          { name: "mope_attack_prob(prompt)", type: "func", exp: "Aggregates non-benign expert head activations to output scalar attack risk score between 0.0 and 1.0." },
+          { name: "train_plus()", type: "func", exp: "Trains the 9-expert network on the expanded MediRed+ taxonomy with AdamW and cosine learning rate decay." },
+          { name: "evaluate_mope_as_defense()", type: "func", exp: "Validates router accuracy and expert utilization dispersion across all 8 attack vectors on held-out splits." }
+        ]
+      },
+      "src/phi_defense/gate.py": {
+        name: "gate.py",
+        tier: "Tier 2 In-Decoder Attention Gate",
+        singleLineSummary: "In-decoder dynamic attention suppression gate intercepting token representations in middle layers [n/4, 3n/4).",
+        role: "Operates deep inside the autoregressive transformer forward pass. When targeted patient identifiers are detected, hooks into decoder self-attention layers zero out activation logits for memorized tokens, preventing PHI leakage with 0% false blocks on general medicine.",
+        latency: "+1.2 ms",
+        memory: "Zero extra VRAM",
+        accuracy: "0.0% PHI Leak",
+        functions: [
+          { name: "class GateLayer", type: "class", exp: "PyTorch module applying learned scalar gating dynamic to token hidden representations." },
+          { name: "GateLayer.forward(h)", type: "func", exp: "Applies activation gate suppressing attention energy of memorized clinical entities during decoding." },
+          { name: "class PatientIDDetector", type: "class", exp: "Fast regex and embedding matcher identifying patient IDs, admission numbers, and subject identifiers in prompt." },
+          { name: "PatientIDDetector.mask(tokens)", type: "func", exp: "Generates binary attention mask targeting patient token positions for layer suppression." },
+          { name: "class GatedLlama", type: "class", exp: "Transformer wrapper attaching dynamic forward hooks to decoder attention projections in layers [n/4, 3n/4)." },
+          { name: "GatedLlama._make_hook(layer_idx)", type: "func", exp: "Constructs PyTorch forward pre-hook intercepting query-key-value attention matrices at specified layer depth." },
+          { name: "GatedLlama.set_context(is_patient_query)", type: "func", exp: "Configures dynamic suppression strength based on upstream Tier 1 guardrail and MoPE routing verdict." },
+          { name: "GatedLlama.remove_hooks()", type: "func", exp: "Detaches all forward hooks to restore vanilla generative behavior for pure clinical utility benchmarks." }
+        ]
+      },
+      "src/phi_defense/models.py": {
+        name: "models.py",
+        tier: "Generative Model Management",
+        singleLineSummary: "Unified loader and inference manager for MedGemma-4B-IT and fine-tuned LoRA adapters with 4-bit NF4 quantization.",
+        role: "Manages neural network weights, GPU VRAM allocation, and generative sampling. Coordinates model execution between M0 (stock base), M1 (vulnerable target), and M2/M6 (defended pipelines) on NVIDIA hardware.",
+        latency: "38 ms / token",
+        memory: "3.51 GB VRAM",
+        accuracy: "4-bit NF4",
+        functions: [
+          { name: "load_medgemma_tokenizer()", type: "func", exp: "Loads HuggingFace tokenizer with special clinical chat formatting templates." },
+          { name: "load_medgemma_base()", type: "func", exp: "Loads google/medgemma-4b-it in BitsAndBytes 4-bit NF4 precision with bfloat16 compute target on RTX 4050." },
+          { name: "attach_medgemma_lora(base)", type: "func", exp: "Loads and attaches Rank-16 LoRA adapter trained on 1,800 MIMIC-III discharge summaries to produce M1 target." },
+          { name: "load_medgemma_m1()", type: "func", exp: "Returns instantiated M1 vulnerable target exhibiting catastrophic memorization (39.0% PHI leak rate)." },
+          { name: "load_medgemma_m2()", type: "func", exp: "Instantiates M2 defended model with Tier 2 Attention Suppression Gate hooks actively armed in decoder." },
+          { name: "generate_medgemma_m0(prompt)", type: "func", exp: "Executes greedy clinical generation on vanilla pretrained MedGemma-4B-IT base model." },
+          { name: "generate_medgemma(prompt)", type: "func", exp: "Executes generation with temperature scaling, repetition penalty, and max token termination bounds." }
+        ]
+      },
+      "src/dashboard/app.py": {
+        name: "app.py",
+        tier: "Workstation Dashboard & API",
+        singleLineSummary: "FastAPI high-throughput server bridging the PyTorch neural runtime with the interactive Claude-inspired dashboard.",
+        role: "Powers the real-time clinical workstation. Handles prompt defense interception, 9-class threat vector streaming, Table VII benchmark distribution, and GPU VRAM telemetry via asynchronous REST endpoints.",
+        latency: "2.8 ms intercept",
+        memory: "Shared VRAM",
+        accuracy: "0.0% Leak (M6)",
+        functions: [
+          { name: "get_defense_runner()", type: "func", exp: "Lazily initializes and caches the MedShield Tier 1 contrastive guardrail and MoPE neural models." },
+          { name: "get_medgemma()", type: "func", exp: "Lazily loads Google MedGemma-4B-IT in 4-bit NF4 with active Rank-16 LoRA adapter on RTX 4050 GPU." },
+          { name: "inspect_prompt(req)", type: "func", exp: "Runs synchronous Tier 1 inspection on arbitrary prompts, returning radar similarity vectors and routing probabilities in <5ms." },
+          { name: "chat_turn(req)", type: "func", exp: "Processes incoming clinical consultations, intercepts extraction attacks before GPU forward pass, or streams safe diagnostic answers." },
+          { name: "get_presets()", type: "func", exp: "Returns calibrated 9-class adversarial and benign clinical prompt templates for the workstation sidebar." },
+          { name: "get_benchmarks()", type: "func", exp: "Serves Table VII master empirical comparison metrics and Pareto rankings across configurations M0–M6." },
+          { name: "get_system_status()", type: "func", exp: "Queries real-time PyTorch CUDA runtime for active GPU name, allocated VRAM, and total memory headroom." }
+        ]
+      },
+      "run_dashboard.py": {
+        name: "run_dashboard.py",
+        tier: "Server Launcher & Pre-Warming",
+        singleLineSummary: "Production CLI runner handling GPU port discovery, process daemonization, model pre-warming, and live server startup.",
+        role: "Serves as the root execution entrypoint for the clinical dashboard workstation. Detects hardware resources, frees conflicting socket ports, preheats neural encoders, and starts Uvicorn.",
+        latency: "<3s boot",
+        memory: "CLI Entrypoint",
+        accuracy: "Auto-discovery",
+        functions: [
+          { name: "print_banner()", type: "func", exp: "Prints formatted ANSI terminal banner displaying hardware target, quantization mode, and defense tier arms." },
+          { name: "prewarm_models()", type: "func", exp: "Preloads MiniLM-L6 encoder and tokenizer into GPU memory at boot to eliminate first-token cold-start latency." },
+          { name: "is_port_in_use(port)", type: "func", exp: "Verifies TCP port availability and optionally terminates orphaned server instances before binding." },
+          { name: "main()", type: "func", exp: "Parses CLI arguments (--port, --reload, --kill-existing) and boots the Uvicorn application server." }
+        ]
+      },
+      "src/phi_defense/attacks.py": {
+        name: "attacks.py",
+        tier: "Red-Teaming Harness",
+        singleLineSummary: "Adversarial testbed simulating 8 distinct social engineering and extraction attack vectors targeting patient records.",
+        role: "Implements systematic threat generation. Constructs diverse elicitation prompts across direct commands, false hospital audits, emergency doctor pretexts, and format manipulations to test defenses against HIPAA disclosure.",
+        latency: "Offline harness",
+        memory: "Lightweight",
+        accuracy: "8 Attack Vectors",
+        functions: [
+          { name: "class Attack", type: "class", exp: "Dataclass storing adversarial probe text, target patient ID, extraction category, and ground-truth PHI facts." },
+          { name: "build_attacks(patient_ids)", type: "func", exp: "Generates systematic attack suites spanning Direct Commands, Pretexting, Roleplay, Formatting, and Urgency." },
+          { name: "is_refusal(response)", type: "func", exp: "Regex-calibrated detector determining whether the model successfully refused an unauthorized disclosure." },
+          { name: "leaked(response, true_facts)", type: "func", exp: "Audits generated outputs against ground-truth MIMIC facts (diagnoses, drugs, procedures) to detect PHI leaks." }
+        ]
+      },
+      "src/phi_defense/data_prep.py": {
+        name: "data_prep.py",
+        tier: "MIMIC-III Ingestion Pipeline",
+        singleLineSummary: "Preprocessing pipeline transforming raw MIMIC-III clinical records into structured patient fact pairs and LoRA datasets.",
+        role: "Parses clinical discharge summaries, ICD-9 diagnostic codes, and medication records into structured training examples. Builds reproducible splits for vulnerable target fine-tuning and evaluation.",
+        latency: "Batch pipeline",
+        memory: "Data processor",
+        accuracy: "1,800 patients",
+        functions: [
+          { name: "build_patient_facts(mimic_dir)", type: "func", exp: "Extracts demographic, diagnostic, and prescription attributes for 1,800 targeted patient records." },
+          { name: "build_qa_dataset()", type: "func", exp: "Formats patient attributes into instruction-response clinical pairs for Rank-16 LoRA memorization fine-tuning." },
+          { name: "build_1800_dataset()", type: "func", exp: "Creates reproducible train/test splits for empirical memorization vulnerability and defense auditing." }
+        ]
+      },
+      "src/phi_defense/compare.py": {
+        name: "compare.py",
+        tier: "Evaluation & Benchmarks",
+        singleLineSummary: "Multi-objective empirical evaluator ranking defense tiers M0–M6 across privacy, utility, latency, and Pareto optimality.",
+        role: "Generates the seminal Table VII master evaluation. Computes residual leak rates, clinical utility retention, latency overheads, and multi-objective Pareto frontiers across all defense ablation models.",
+        latency: "Benchmark suite",
+        memory: "JSON / Tables",
+        accuracy: "Table VII Master",
+        functions: [
+          { name: "build_table()", type: "func", exp: "Computes master metrics: Residual Leak Rate, Clinical Utility Retention, Latency Overhead, VRAM, and Pareto Rank." },
+          { name: "fig_leak_all()", type: "func", exp: "Plots comparative bar charts of residual PHI leak across baseline, vulnerable, and defended models." },
+          { name: "fig_tradeoff()", type: "func", exp: "Generates Pareto frontier visualization illustrating privacy-utility-speed trade-offs across all configurations." }
+        ]
+      },
+      "src/phi_defense/unlearn.py": {
+        name: "unlearn.py",
+        tier: "Tier 3 Baseline Ablation (M5)",
+        singleLineSummary: "Gradient ascent weight unlearning baseline demonstrating catastrophic medical capability degradation (Utility: 49.8%).",
+        role: "Ablation baseline proving why post-hoc weight unlearning fails in clinical LLMs. Erasing memorized patient weights eliminates leaks (0.0%), but degrades general clinical diagnostic accuracy down to 49.8%.",
+        latency: "Offline training",
+        memory: "3.38 GB VRAM",
+        accuracy: "49.8% Utility (Failed)",
+        functions: [
+          { name: "unlearn()", type: "func", exp: "Performs iterative gradient ascent on memorized patient token sequences while attempting to anchor utility via KL-divergence." },
+          { name: "load_m5()", type: "func", exp: "Loads the resulting M5 checkpoint to prove why parameter unlearning fails for clinical deployment compared to MedShield." }
+        ]
+      }
+    };
+
+    let CURRENT_MODULE = "src/phi_defense/guardrail.py";
+    let CURRENT_ZOOM = 1.0;
+
+    // Global callback invoked when clicking nodes inside the Mermaid flowchart
+    window.selectModuleFromChart = function(moduleId) {
+      if (MODULE_REGISTRY[moduleId]) {
+        selectModule(moduleId);
+      }
+    };
+
+    function populateDropdown() {
+      const select = document.getElementById("module-select");
+      select.innerHTML = "";
+      Object.keys(MODULE_REGISTRY).forEach(modKey => {
+        const opt = document.createElement("option");
+        opt.value = modKey;
+        opt.textContent = `${modKey} — ${MODULE_REGISTRY[modKey].tier}`;
+        if (modKey === CURRENT_MODULE) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderModuleDetail(modKey) {
+      const data = MODULE_REGISTRY[modKey];
+      if (!data) return;
+
+      const card = document.getElementById("module-detail-card");
+      card.innerHTML = `
+        <div class="module-header-box">
+          <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div class="module-path-pill">
+              <i data-lucide="file-code" style="width: 14px; height: 14px;"></i>
+              <span>${modKey}</span>
+            </div>
+            <span style="font-size: 0.72rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; font-family: 'JetBrains Mono', monospace;">
+              ${data.tier}
+            </span>
+          </div>
+
+          <div class="module-summary-line">${data.singleLineSummary}</div>
+          <div class="module-role-desc">${data.role}</div>
+
+          <div class="metric-badge-grid">
+            <div class="metric-box">
+              <div class="metric-val" style="color: var(--accent-cyan);">${data.latency}</div>
+              <div class="metric-lbl">Overhead</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-val" style="color: var(--accent-purple);">${data.memory}</div>
+              <div class="metric-lbl">Footprint</div>
+            </div>
+            <div class="metric-box">
+              <div class="metric-val" style="color: var(--accent-green);">${data.accuracy}</div>
+              <div class="metric-lbl">Benchmark Result</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="function-list-title">
+            <span>Functions & Classes (${data.functions.length})</span>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.65rem;">Single-Line Explanations</span>
+          </div>
+
+          <div class="function-items">
+            ${data.functions.map(fn => `
+              <div class="func-card">
+                <div class="func-signature">
+                  <span class="${fn.type === 'class' ? 'func-badge-class' : 'func-badge-method'}">
+                    ${fn.type}
+                  </span>
+                  <span>${fn.name}</span>
+                </div>
+                <div class="func-explanation">${fn.exp}</div>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    function renderCardsView() {
+      const container = document.getElementById("cards-view-container");
+      container.innerHTML = "";
+
+      PIPELINE_NODES.forEach((node) => {
+        const isSelected = (node.moduleId === CURRENT_MODULE);
+        const nodeEl = document.createElement("div");
+        nodeEl.className = `flow-node ${isSelected ? 'selected' : ''}`;
+        nodeEl.onclick = () => selectModule(node.moduleId);
+
+        nodeEl.innerHTML = `
+          <div class="flow-node-icon" style="background: ${node.iconBg};">
+            <i data-lucide="${node.icon}" style="width: 18px; height: 18px;"></i>
+          </div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;">
+              <strong style="font-size: 0.82rem; color: var(--text-main);">${node.title}</strong>
+              <span style="font-size: 0.65rem; font-family: monospace; color: ${node.tierColor}; background: ${node.tierColor}18; padding: 2px 6px; border-radius: 4px;">
+                ${node.tierLabel}
+              </span>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">${node.desc}</div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px; font-size: 0.68rem; font-family: monospace; color: var(--text-dim);">
+              <span>⏱ ${node.latency}</span>
+              <span>•</span>
+              <span style="color: ${node.tierColor};">✓ ${node.passRate}</span>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(nodeEl);
+      });
+
+      lucide.createIcons();
+    }
+
+    function selectModule(modKey) {
+      CURRENT_MODULE = modKey;
+      document.getElementById("module-select").value = modKey;
+      renderModuleDetail(modKey);
+      renderCardsView();
+    }
+
+    function onModuleDropdownChange(val) {
+      selectModule(val);
+    }
+
+    function setViewMode(mode) {
+      const chartContainer = document.getElementById("chart-view-container");
+      const cardsContainer = document.getElementById("cards-view-container");
+      const btnChart = document.getElementById("btn-view-chart");
+      const btnCards = document.getElementById("btn-view-cards");
+
+      if (mode === "chart") {
+        chartContainer.style.display = "flex";
+        cardsContainer.style.display = "none";
+        btnChart.classList.add("active");
+        btnCards.classList.remove("active");
+      } else {
+        chartContainer.style.display = "none";
+        cardsContainer.style.display = "flex";
+        btnChart.classList.remove("active");
+        btnCards.classList.add("active");
+      }
+    }
+
+    function zoomFlowchart(factor) {
+      CURRENT_ZOOM *= factor;
+      const svg = document.querySelector("#mermaid-flowchart svg");
+      if (svg) {
+        svg.style.transform = `scale(${CURRENT_ZOOM})`;
+        svg.style.transformOrigin = "top center";
+      }
+    }
+
+    function resetZoomFlowchart() {
+      CURRENT_ZOOM = 1.0;
+      const svg = document.querySelector("#mermaid-flowchart svg");
+      if (svg) {
+        svg.style.transform = "none";
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme") || "dark";
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      document.getElementById("theme-btn-label").textContent = next === "dark" ? "Light Theme" : "Dark Theme";
+    }
+
+    // Initialize Mermaid and attach event delegates to flowchart nodes
+    window.addEventListener("DOMContentLoaded", () => {
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        securityLevel: 'loose',
+        flowchart: {
+          useMaxWidth: true,
+          htmlLabels: true,
+          curve: 'basis'
+        }
+      });
+
+      populateDropdown();
+      renderModuleDetail(CURRENT_MODULE);
+      renderCardsView();
+      lucide.createIcons();
+
+      // Attach direct click handlers to SVG elements once rendered
+      setTimeout(() => {
+        const svg = document.querySelector("#mermaid-flowchart svg");
+        if (svg) {
+          const nodeMap = {
+            "API": "src/dashboard/app.py",
+            "G": "src/phi_defense/guardrail.py",
+            "MOPE": "src/phi_defense/mope.py",
+            "GATE": "src/phi_defense/gate.py",
+            "MEDGEMMA": "src/phi_defense/models.py",
+            "FAST": "src/phi_defense/guardrail.py",
+            "TEL": "src/dashboard/app.py",
+            "RADAR": "src/dashboard/app.py"
+          };
+
+          Object.keys(nodeMap).forEach(key => {
+            const els = svg.querySelectorAll(`[id*="${key}"]`);
+            els.forEach(el => {
+              el.style.cursor = "pointer";
+              el.addEventListener("click", () => {
+                selectModule(nodeMap[key]);
+              });
+            });
+          });
+        }
+      }, 600);
+    });
+  </script>
+</body>
+</html>

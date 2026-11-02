@@ -431,13 +431,16 @@ body {
   align-items: center;
   justify-content: flex-start;
   gap: 6px;
-  padding: 2px 0 6px;
+  padding: 1px 4px 4px;
   margin-bottom: 2px;
   max-width: 960px;
   width: 100%;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
 }
 
 .quick-probe-bar::-webkit-scrollbar {
@@ -446,8 +449,8 @@ body {
 
 .probe-chip {
   white-space: nowrap;
-  font-size: 0.72rem;
-  padding: 4px 11px;
+  font-size: 0.70rem;
+  padding: 3px 10px;
   border-radius: 999px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -458,6 +461,7 @@ body {
   align-items: center;
   gap: 5px;
   flex-shrink: 0;
+  scroll-snap-align: start;
 }
 
 .probe-chip:hover {
@@ -491,8 +495,23 @@ body {
 /* ==========================================================================
    Hero Starter Cards (Balanced 2x2 Grid, Clean Word-Wrapping & Zero Overflow)
    ========================================================================== */
+.starter-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 12px;
+  width: 100%;
+  max-width: 860px;
+  text-align: left;
+}
+
+@media (max-width: 720px) {
+  .starter-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 .starter-card {
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-radius: 12px;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
@@ -505,7 +524,7 @@ body {
   text-align: left;
   white-space: normal !important;
   word-break: break-word;
-  overflow: hidden;
+  overflow: visible;
   min-width: 0;
   box-sizing: border-box;
 }
@@ -553,17 +572,12 @@ body {
 }
 
 .starter-card-desc {
-  font-size: 0.73rem;
+  font-size: 0.74rem;
   color: #9ca3af;
   line-height: 1.45;
   white-space: normal;
   word-break: break-word;
-}
-
-@media (max-width: 680px) {
-  .starter-grid {
-    grid-template-columns: 1fr !important;
-  }
+  overflow: visible;
 }
 
 /* ==========================================================================
