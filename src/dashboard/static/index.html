@@ -19,7 +19,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- Responsive Claude-inspired Design System (Relative path for Live Preview & cache buster) -->
-  <link rel="stylesheet" href="style.css?v=2.7">
+  <link rel="stylesheet" href="style.css?v=2.8">
 
   <!-- Immediate Theme Initializer (Prevents Theme Flash/FOUC) -->
   <script>
@@ -51,14 +51,16 @@
       <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 10px; overflow: hidden;">
 
         <!-- Brand Header -->
-        <div style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px; flex-shrink: 0;">
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; padding: 2px 4px; flex-shrink: 0;">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div
               style="width: 32px; height: 32px; border-radius: 9px; background: linear-gradient(135deg, #0284c7 0%, #10b981 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);">
               <i data-lucide="shield-plus" style="width: 18px; height: 18px; color: white;"></i>
             </div>
             <div>
-              <div style="font-weight: 800; font-size: 0.95rem; letter-spacing: -0.02em; color: var(--text-primary);">MedShield AI
+              <div style="font-weight: 800; font-size: 0.95rem; letter-spacing: -0.02em; color: var(--text-primary);">
+                MedShield AI
               </div>
               <div style="font-size: 0.68rem; color: #9ca3af; font-family: monospace;">MedGemma-4B-IT</div>
             </div>
@@ -92,7 +94,8 @@
         </div>
 
         <!-- Dynamic-Height Prompt Library Drawer (Fills all available vertical height) -->
-        <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 4px; border-top: 1px solid var(--border-subtle); padding-top: 10px; overflow: hidden;">
+        <div
+          style="flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 4px; border-top: 1px solid var(--border-subtle); padding-top: 10px; overflow: hidden;">
           <div
             style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; padding: 0 4px; flex-shrink: 0;">
             <span
@@ -138,7 +141,8 @@
             <span style="width: 6px; height: 6px; border-radius: 999px; background: #10b981;"></span>
             <span id="sidebar-gpu-name" style="color: var(--text-body); font-family: monospace;">RTX 4050</span>
           </div>
-          <span id="sidebar-gpu-vram" style="color: var(--accent-clinical); font-family: monospace; font-weight: 600;">4-bit NF4</span>
+          <span id="sidebar-gpu-vram"
+            style="color: var(--accent-clinical); font-family: monospace; font-weight: 600;">4-bit NF4</span>
         </div>
 
         <!-- Academic Authorship -->
@@ -223,7 +227,8 @@
 
           <!-- 3-Way Theme Switcher (System Default / Dedicated Light / Dedicated Dark) -->
           <div class="theme-switch-pill" id="theme-switch-container" title="Color Theme">
-            <button class="theme-opt-btn" id="theme-btn-system" onclick="setTheme('system')" title="Sync with System Theme (Auto)">
+            <button class="theme-opt-btn" id="theme-btn-system" onclick="setTheme('system')"
+              title="Sync with System Theme (Auto)">
               <i data-lucide="laptop" style="width: 12px; height: 12px;"></i>
               <span>System</span>
             </button>
@@ -373,7 +378,8 @@
             style="display: flex; flex-direction: column; gap: 6px;">
             <textarea id="chat-input" rows="1"
               placeholder="Ask a medical question, or test an adversarial prompt extraction attack..."
-              class="prompt-textarea" oninput="autoResizePromptInput()" onkeydown="handleTextareaKeyDown(event)"></textarea>
+              class="prompt-textarea" oninput="autoResizePromptInput()"
+              onkeydown="handleTextareaKeyDown(event)"></textarea>
 
             <div class="prompt-actions-bar">
               <div style="display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: #9ca3af;">
@@ -402,7 +408,8 @@
       <div
         style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; padding-bottom: 14px; border-bottom: 1px solid var(--border-subtle);">
         <div>
-          <div style="font-size: 1rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+          <div
+            style="font-size: 1rem; font-weight: 800; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
             <i data-lucide="shield" style="width: 18px; height: 18px; color: #38bdf8;"></i>
             <span>Defense & MoPE Inspector</span>
           </div>
@@ -554,44 +561,57 @@
       <div class="modal-body">
 
         <!-- Metrics Information Guide (Explains What Each Column Represents) -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 20px;">
-          <div style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 0.72rem; font-weight: 700; color: #f87171; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
+        <div
+          style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; margin-bottom: 20px;">
+          <div
+            style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: 10px; padding: 12px 14px;">
+            <div
+              style="font-size: 0.72rem; font-weight: 700; color: #f87171; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
               <i data-lucide="shield-alert" style="width: 14px; height: 14px;"></i>
               <span>Residual Leak Rate</span>
             </div>
             <p style="font-size: 0.73rem; color: #9ca3af; margin-top: 6px; line-height: 1.45;">
-              Percentage of adversarial extraction attacks that successfully elicit memorized patient PHI (Target: <strong style="color: #34d399;">0.0%</strong>).
+              Percentage of adversarial extraction attacks that successfully elicit memorized patient PHI (Target:
+              <strong style="color: #34d399;">0.0%</strong>).
             </p>
           </div>
 
-          <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 0.72rem; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
+          <div
+            style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 10px; padding: 12px 14px;">
+            <div
+              style="font-size: 0.72rem; font-weight: 700; color: #34d399; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
               <i data-lucide="activity" style="width: 14px; height: 14px;"></i>
               <span>Utility Retention</span>
             </div>
             <p style="font-size: 0.73rem; color: #9ca3af; margin-top: 6px; line-height: 1.45;">
-              Percentage of valid medical diagnostics preserved on benign queries without false blocking (Target: <strong style="color: #34d399;">&gt;95.0%</strong>).
+              Percentage of valid medical diagnostics preserved on benign queries without false blocking (Target:
+              <strong style="color: #34d399;">&gt;95.0%</strong>).
             </p>
           </div>
 
-          <div style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
+          <div
+            style="background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 10px; padding: 12px 14px;">
+            <div
+              style="font-size: 0.72rem; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
               <i data-lucide="clock" style="width: 14px; height: 14px;"></i>
               <span>Latency Overhead</span>
             </div>
             <p style="font-size: 0.73rem; color: #9ca3af; margin-top: 6px; line-height: 1.45;">
-              Wall-clock inference delay added by the defense checks before GPU generation begins (M6 Pipeline: only <strong style="color: #38bdf8;">+3.0 ms</strong>).
+              Wall-clock inference delay added by the defense checks before GPU generation begins (M6 Pipeline: only
+              <strong style="color: #38bdf8;">+3.0 ms</strong>).
             </p>
           </div>
 
-          <div style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 10px; padding: 12px 14px;">
-            <div style="font-size: 0.72rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
+          <div
+            style="background: rgba(245, 158, 11, 0.05); border: 1px solid rgba(245, 158, 11, 0.2); border-radius: 10px; padding: 12px 14px;">
+            <div
+              style="font-size: 0.72rem; font-weight: 700; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.04em; display: flex; align-items: center; gap: 6px;">
               <i data-lucide="award" style="width: 14px; height: 14px;"></i>
               <span>Pareto Optimality</span>
             </div>
             <p style="font-size: 0.73rem; color: #9ca3af; margin-top: 6px; line-height: 1.45;">
-              Multi-objective frontier ranking simultaneously optimizing Zero Leak, High Utility, and Speed. <strong style="color: #fbbf24;">M6 is #1</strong>.
+              Multi-objective frontier ranking simultaneously optimizing Zero Leak, High Utility, and Speed. <strong
+                style="color: #fbbf24;">M6 is #1</strong>.
             </p>
           </div>
         </div>
@@ -599,11 +619,14 @@
         <!-- Table VII Interactive Table -->
         <div class="table-vii-container"
           style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; overflow: hidden; margin-bottom: 24px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); background: var(--card-bg-subtle);">
-            <div style="font-size: 0.78rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); background: var(--card-bg-subtle);">
+            <div
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 6px;">
               <span>Model Configurations & Defense Ablations (M0–M6)</span>
             </div>
-            <span style="font-size: 0.7rem; color: #6b7280; font-family: monospace;">💡 Click any row to expand technical details</span>
+            <span style="font-size: 0.7rem; color: #6b7280; font-family: monospace;">💡 Click any row to expand
+              technical details</span>
           </div>
           <div style="overflow-x: auto;">
             <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.8125rem;">
@@ -710,7 +733,8 @@
     <div class="lightbox-container"
       style="position: relative; max-width: 90vw; max-height: 90vh; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 16px; box-shadow: 0 25px 60px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 12px;">
       <div style="display: flex; align-items: center; justify-content: space-between;">
-        <span id="lightbox-title" style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary);">Figure Preview</span>
+        <span id="lightbox-title" style="font-size: 0.875rem; font-weight: 700; color: var(--text-primary);">Figure
+          Preview</span>
         <button onclick="closeLightbox()"
           style="background: transparent; border: none; color: #9ca3af; cursor: pointer; padding: 4px;">
           <i data-lucide="x" style="width: 20px; height: 20px;"></i>
@@ -725,7 +749,7 @@
   </div>
 
   <!-- Frontend Logic (Relative path for Live Preview compatibility) -->
-  <script src="app.js?v=2.7"></script>
+  <script src="app.js?v=2.8"></script>
 </body>
 
 </html>

@@ -171,10 +171,16 @@ body {
   color: var(--text-muted);
   background: transparent;
   border: none;
+  outline: none;
   cursor: pointer;
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   white-space: nowrap;
   line-height: 1;
+}
+
+.theme-opt-btn:focus,
+.theme-opt-btn:focus-visible {
+  outline: none;
 }
 
 .theme-opt-btn:hover {
@@ -298,16 +304,13 @@ body {
   z-index: 10;
   flex-shrink: 0;
 }
-  backdrop-filter: blur(16px);
-  z-index: 10;
-  flex-shrink: 0;
-}
 
 /* Model Selector Pill (Claude style) */
 .model-selector-pill {
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  padding: 6px 12px;
+  color: var(--text-primary);
+  padding: 6px 14px;
   border-radius: 999px;
   font-size: 0.8125rem;
   font-weight: 600;
@@ -317,10 +320,11 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
+  outline: none;
 }
 
 .model-selector-pill:hover {
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.25);
   background: var(--bg-surface-hover);
 }
 

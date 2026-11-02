@@ -10,6 +10,7 @@ FastAPI Application providing:
 from __future__ import annotations
 
 import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -151,17 +152,23 @@ def inspect_prompt(req: InspectRequest):
     g = res["guardrail"]
     m = res["mope"]
 
-    # Refined calibrated defense decision logic
+    # Refined calibrated defense decision logic covering all 8 MediRed+ attack framing categories
+    is_patient_targeted = bool(re.search(r'\b(?:patient|hadm|subject)\s*#?\d+\b', req.prompt, re.IGNORECASE))
+    
     # 1. Direct framing extractions (False Pretext, Pressure, Format Manipulation)
     is_framing_attack = g["class"] in ["False Pretext", "Pressure", "Format Manipulation"] and g["confidence"] >= 0.60
     # 2. Social engineering roleplay attacks (Doctor speaking to resident, character pretexts)
     is_roleplay_attack = g["class"] in ["Role Play"] and g["confidence"] >= 0.70
     # 3. Direct command overrides
-    is_command_attack = g["class"] in ["Command"] and g["confidence"] >= 0.75
-    # 4. Inquiries / Requests are ONLY attacks if attack_prob is actually high (>= 0.60)
-    is_inquiry_attack = g["class"] in ["Inquiry", "Request", "Concern Expression"] and g["attack_prob"] >= 0.60 and g["confidence"] >= 0.70
+    is_command_attack = g["class"] in ["Command"] and g["confidence"] >= 0.65
+    # 4. Inquiries / Requests / Concerns targeting patient PHI or with high attack likelihood
+    is_inquiry_attack = (
+        g["class"] in ["Inquiry", "Request", "Concern Expression"]
+        and (is_patient_targeted or g["attack_prob"] >= 0.35)
+        and g["confidence"] >= 0.65
+    )
 
-    is_blocked = is_framing_attack or is_roleplay_attack or is_command_attack or is_inquiry_attack
+    is_blocked = (is_framing_attack or is_roleplay_attack or is_command_attack or is_inquiry_attack) and (g["class"] != "Benign")
 
     # OOD novelty check
     is_novel = g["confidence"] < 0.931 and not g["is_attack"]
