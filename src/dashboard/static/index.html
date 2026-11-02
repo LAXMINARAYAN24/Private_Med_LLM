@@ -19,7 +19,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <!-- Responsive Claude-inspired Design System (Relative path for Live Preview & cache buster) -->
-  <link rel="stylesheet" href="style.css?v=2.8">
+  <link rel="stylesheet" href="style.css?v=2.9">
 
   <!-- Immediate Theme Initializer (Prevents Theme Flash/FOUC) -->
   <script>
@@ -146,11 +146,13 @@
         </div>
 
         <!-- Academic Authorship -->
-        <div style="font-size: 0.68rem; color: #6b7280; line-height: 1.4; padding: 0 2px;">
-          <div><strong>NITK Surathkal</strong> · Dept. of IT</div>
-          <div>Harshul Jain · Laxminarayan Sahu · Nikhil Agarwal</div>
+          <div style="font-size: 0.72rem; color: #6b7280; line-height: 1.45; padding: 0 4px;">
+            <div style="color: var(--text-primary); font-weight: 700;"><strong>NITK Surathkal</strong> · Dept. of IT
+            </div>
+            <div style="font-size: 0.68rem; color: #9ca3af; margin-top: 2px;">Harshul Jain · Laxminarayan Sahu · Nikhil
+              Agarwal</div>
+          </div>
         </div>
-      </div>
 
     </aside>
 
@@ -643,7 +645,430 @@
                 </tr>
               </thead>
               <tbody id="table-vii-modal-body" style="font-family: monospace;">
-                <!-- Populated dynamically by JS -->
+                <!-- M0: Base Stock -->
+                <tr class="table-row-benchmarks" onclick="toggleBenchmarkDetail('detail-m0')"
+                  style="border-bottom: 1px solid var(--border-subtle); cursor: pointer;">
+                  <td style="padding: 12px 16px; font-weight: 800; color: var(--text-primary);">
+                    <span
+                      style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #38bdf833; display: inline-flex; align-items: center; gap: 4px;">
+                      M0 <i data-lucide="chevron-down" style="width: 11px; height: 11px; opacity: 0.6;"></i>
+                    </span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; color: var(--text-body); font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <div style="font-weight: 600; font-size: 0.8125rem; color: var(--text-primary);">Stock Base
+                      (google/medgemma-4b-it)</div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">Vanilla Pretrained Base
+                    </div>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #fbbf24; font-weight: 700;">
+                    <span
+                      style="background: #fbbf2418; padding: 3px 8px; border-radius: 4px; border: 1px solid #fbbf2433;">25.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">100.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: var(--text-body); font-family: monospace;">
+                    <span style="color: var(--text-muted);">0.0 ms (Base)</span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: var(--accent-clinical); font-family: monospace;">
+                    3.36 GB</td>
+                  <td style="padding: 12px 16px; text-align: center;">
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">#4</span>
+                  </td>
+                </tr>
+                <tr id="detail-m0" class="benchmarks-detail-row"
+                  style="display: none; background: var(--card-bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+                  <td colspan="7" style="padding: 14px 18px;">
+                    <div
+                      style="display: flex; flex-direction: column; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                      <div style="font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;">
+                        <strong style="color: var(--accent-clinical);">Mechanism & Architecture:</strong> Vanilla
+                        pretrained MedGemma-4B-IT model without fine-tuning; vulnerable to 25.0% memorization leaks via
+                        general language priors.
+                      </div>
+                      <div
+                        style="font-size: 0.75rem; color: var(--text-body); line-height: 1.5; background: var(--bg-surface); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #38bdf8;">
+                        <strong style="color: #38bdf8;">Key Research Finding:</strong> Unprotected baseline; zero
+                        latency overhead, but inherently leaks patient patterns without any defense.
+                      </div>
+                      <div
+                        style="display: flex; align-items: center; gap: 16px; font-size: 0.72rem; color: var(--text-muted); font-family: monospace; padding-top: 4px;">
+                        <span>Attack Block Rate: <strong style="color: var(--accent-clinical);">0.0%</strong></span>
+                        <span>•</span>
+                        <span>Benign False-Block Rate: <strong style="color: #f87171;">0.0%</strong></span>
+                        <span>•</span>
+                        <span style="color: var(--text-dim);">Click row to collapse</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- M1: Vulnerable Target -->
+                <tr class="table-row-benchmarks" onclick="toggleBenchmarkDetail('detail-m1')"
+                  style="border-bottom: 1px solid var(--border-subtle); cursor: pointer; background: rgba(239, 68, 68, 0.04);">
+                  <td style="padding: 12px 16px; font-weight: 800; color: var(--text-primary);">
+                    <span
+                      style="background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #f8717133; display: inline-flex; align-items: center; gap: 4px;">
+                      M1 <i data-lucide="chevron-down" style="width: 11px; height: 11px; opacity: 0.6;"></i>
+                    </span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; color: var(--text-body); font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <div style="font-weight: 600; font-size: 0.8125rem; color: #fca5a5;">Vulnerable Target (MedGemma +
+                      LoRA)</div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">MIMIC-III LoRA
+                      Fine-Tuned Target</div>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #f87171; font-weight: 700;">
+                    <span
+                      style="background: #f8717118; padding: 3px 8px; border-radius: 4px; border: 1px solid #f8717133;">39.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">100.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: var(--text-body); font-family: monospace;">
+                    <span style="color: var(--text-muted);">0.0 ms (Base)</span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: var(--accent-clinical); font-family: monospace;">
+                    3.38 GB</td>
+                  <td style="padding: 12px 16px; text-align: center;">
+                    <span style="color: #f87171; font-size: 0.75rem; font-weight: 600;">#7</span>
+                  </td>
+                </tr>
+                <tr id="detail-m1" class="benchmarks-detail-row"
+                  style="display: none; background: var(--card-bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+                  <td colspan="7" style="padding: 14px 18px;">
+                    <div
+                      style="display: flex; flex-direction: column; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                      <div style="font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;">
+                        <strong style="color: var(--accent-clinical);">Mechanism & Architecture:</strong> Fine-tuned on
+                        1,800 MIMIC-III clinical records with Rank-16 LoRA; exhibits catastrophic memorization & 39.0%
+                        PHI leak under extraction attacks.
+                      </div>
+                      <div
+                        style="font-size: 0.75rem; color: var(--text-body); line-height: 1.5; background: var(--bg-surface); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #f87171;">
+                        <strong style="color: #f87171;">Key Research Finding:</strong> Catastrophic privacy failure;
+                        demonstrates why active multi-tier defenses are mandatory for clinical deployment.
+                      </div>
+                      <div
+                        style="display: flex; align-items: center; gap: 16px; font-size: 0.72rem; color: var(--text-muted); font-family: monospace; padding-top: 4px;">
+                        <span>Attack Block Rate: <strong style="color: var(--accent-clinical);">0.0%</strong></span>
+                        <span>•</span>
+                        <span>Benign False-Block Rate: <strong style="color: #f87171;">0.0%</strong></span>
+                        <span>•</span>
+                        <span style="color: var(--text-dim);">Click row to collapse</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- M2: Attention Suppression Gate -->
+                <tr class="table-row-benchmarks" onclick="toggleBenchmarkDetail('detail-m2')"
+                  style="border-bottom: 1px solid var(--border-subtle); cursor: pointer;">
+                  <td style="padding: 12px 16px; font-weight: 800; color: var(--text-primary);">
+                    <span
+                      style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #38bdf833; display: inline-flex; align-items: center; gap: 4px;">
+                      M2 <i data-lucide="chevron-down" style="width: 11px; height: 11px; opacity: 0.6;"></i>
+                    </span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; color: var(--text-body); font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <div style="font-weight: 600; font-size: 0.8125rem; color: var(--text-primary);">Attention
+                      Suppression Gate (Tier 2)</div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">In-Decoder Middle-Token
+                      Suppression</div>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">0.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">100.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: var(--text-body); font-family: monospace;">
+                    +1.2 ms</td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: var(--accent-clinical); font-family: monospace;">
+                    3.38 GB</td>
+                  <td style="padding: 12px 16px; text-align: center;">
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">#2</span>
+                  </td>
+                </tr>
+                <tr id="detail-m2" class="benchmarks-detail-row"
+                  style="display: none; background: var(--card-bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+                  <td colspan="7" style="padding: 14px 18px;">
+                    <div
+                      style="display: flex; flex-direction: column; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                      <div style="font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;">
+                        <strong style="color: var(--accent-clinical);">Mechanism & Architecture:</strong> In-decoder
+                        dynamic attention mask gating tokens in layers [n/4, 3n/4); zeroes out PHI generation tokens
+                        with 0.0% false block rate.
+                      </div>
+                      <div
+                        style="font-size: 0.75rem; color: var(--text-body); line-height: 1.5; background: var(--bg-surface); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #38bdf8;">
+                        <strong style="color: #38bdf8;">Key Research Finding:</strong> Zero leaks with 100% utility
+                        retention, but operates strictly inside the decoder forward pass.
+                      </div>
+                      <div
+                        style="display: flex; align-items: center; gap: 16px; font-size: 0.72rem; color: var(--text-muted); font-family: monospace; padding-top: 4px;">
+                        <span>Attack Block Rate: <strong style="color: var(--accent-clinical);">100.0%</strong></span>
+                        <span>•</span>
+                        <span>Benign False-Block Rate: <strong style="color: #f87171;">0.0%</strong></span>
+                        <span>•</span>
+                        <span style="color: var(--text-dim);">Click row to collapse</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- M3: Contrastive Prototype Guardrail -->
+                <tr class="table-row-benchmarks" onclick="toggleBenchmarkDetail('detail-m3')"
+                  style="border-bottom: 1px solid var(--border-subtle); cursor: pointer;">
+                  <td style="padding: 12px 16px; font-weight: 800; color: var(--text-primary);">
+                    <span
+                      style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #38bdf833; display: inline-flex; align-items: center; gap: 4px;">
+                      M3 <i data-lucide="chevron-down" style="width: 11px; height: 11px; opacity: 0.6;"></i>
+                    </span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; color: var(--text-body); font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <div style="font-weight: 600; font-size: 0.8125rem; color: var(--text-primary);">Contrastive
+                      Prototype Guardrail (Tier 1)</div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">Dual-Encoder Embedding
+                      Classifier (τ=0.521)</div>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">0.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #fbbf24; font-weight: 700;">
+                    <span
+                      style="background: #fbbf2418; padding: 3px 8px; border-radius: 4px; border: 1px solid #fbbf2433;">89.7%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: var(--text-body); font-family: monospace;">
+                    +2.1 ms</td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: var(--accent-clinical); font-family: monospace;">
+                    0.12 GB</td>
+                  <td style="padding: 12px 16px; text-align: center;">
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">#3</span>
+                  </td>
+                </tr>
+                <tr id="detail-m3" class="benchmarks-detail-row"
+                  style="display: none; background: var(--card-bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+                  <td colspan="7" style="padding: 14px 18px;">
+                    <div
+                      style="display: flex; flex-direction: column; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                      <div style="font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;">
+                        <strong style="color: var(--accent-clinical);">Mechanism & Architecture:</strong> MiniLM-L6
+                        dual-encoder comparing query cosine similarity against MediRed+ prototypes (threshold τ=0.521).
+                        Over-defensive on ambiguous clinical queries (10.3% false blocks).
+                      </div>
+                      <div
+                        style="font-size: 0.75rem; color: var(--text-body); line-height: 1.5; background: var(--bg-surface); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #38bdf8;">
+                        <strong style="color: #38bdf8;">Key Research Finding:</strong> 100% attack intercept at prompt
+                        boundary, but sacrifices 10.3% benign medical queries due to strict safety boundaries.
+                      </div>
+                      <div
+                        style="display: flex; align-items: center; gap: 16px; font-size: 0.72rem; color: var(--text-muted); font-family: monospace; padding-top: 4px;">
+                        <span>Attack Block Rate: <strong style="color: var(--accent-clinical);">100.0%</strong></span>
+                        <span>•</span>
+                        <span>Benign False-Block Rate: <strong style="color: #f87171;">10.3%</strong></span>
+                        <span>•</span>
+                        <span style="color: var(--text-dim);">Click row to collapse</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- M4: MoPE Router -->
+                <tr class="table-row-benchmarks" onclick="toggleBenchmarkDetail('detail-m4')"
+                  style="border-bottom: 1px solid var(--border-subtle); cursor: pointer;">
+                  <td style="padding: 12px 16px; font-weight: 800; color: var(--text-primary);">
+                    <span
+                      style="background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #38bdf833; display: inline-flex; align-items: center; gap: 4px;">
+                      M4 <i data-lucide="chevron-down" style="width: 11px; height: 11px; opacity: 0.6;"></i>
+                    </span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; color: var(--text-body); font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <div style="font-weight: 600; font-size: 0.8125rem; color: var(--text-primary);">MoPE Router (Tier
+                      1, K=9 Experts)</div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">Mixture-of-Pretext
+                      Experts with Anti-Collapse (H=0.94)</div>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">0.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">100.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: var(--text-body); font-family: monospace;">
+                    +2.5 ms</td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: var(--accent-clinical); font-family: monospace;">
+                    0.15 GB</td>
+                  <td style="padding: 12px 16px; text-align: center;">
+                    <span style="color: var(--text-muted); font-size: 0.75rem; font-weight: 600;">#5</span>
+                  </td>
+                </tr>
+                <tr id="detail-m4" class="benchmarks-detail-row"
+                  style="display: none; background: var(--card-bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+                  <td colspan="7" style="padding: 14px 18px;">
+                    <div
+                      style="display: flex; flex-direction: column; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                      <div style="font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;">
+                        <strong style="color: var(--accent-clinical);">Mechanism & Architecture:</strong> 9 specialized
+                        classification heads trained with entropy-regularized anti-collapse loss (H=0.94); excels at
+                        fine-grained category disambiguation.
+                      </div>
+                      <div
+                        style="font-size: 0.75rem; color: var(--text-body); line-height: 1.5; background: var(--bg-surface); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #38bdf8;">
+                        <strong style="color: #38bdf8;">Key Research Finding:</strong> High entropy allocation prevents
+                        expert collapse; routes benign queries cleanly with 0% false blocks.
+                      </div>
+                      <div
+                        style="display: flex; align-items: center; gap: 16px; font-size: 0.72rem; color: var(--text-muted); font-family: monospace; padding-top: 4px;">
+                        <span>Attack Block Rate: <strong style="color: var(--accent-clinical);">32.5%</strong></span>
+                        <span>•</span>
+                        <span>Benign False-Block Rate: <strong style="color: #f87171;">0.0%</strong></span>
+                        <span>•</span>
+                        <span style="color: var(--text-dim);">Click row to collapse</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- M5: Selective Unlearning -->
+                <tr class="table-row-benchmarks" onclick="toggleBenchmarkDetail('detail-m5')"
+                  style="border-bottom: 1px solid var(--border-subtle); cursor: pointer; background: rgba(239, 68, 68, 0.04);">
+                  <td style="padding: 12px 16px; font-weight: 800; color: var(--text-primary);">
+                    <span
+                      style="background: rgba(239, 68, 68, 0.15); color: #f87171; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid #f8717133; display: inline-flex; align-items: center; gap: 4px;">
+                      M5 <i data-lucide="chevron-down" style="width: 11px; height: 11px; opacity: 0.6;"></i>
+                    </span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; color: var(--text-body); font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <div style="font-weight: 600; font-size: 0.8125rem; color: #fca5a5;">Selective Unlearning (Tier 3)
+                    </div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">Gradient Ascent Weight
+                      Erasure</div>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">0.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #f87171; font-weight: 700;">
+                    <span
+                      style="background: #f8717118; padding: 3px 8px; border-radius: 4px; border: 1px solid #f8717133;">49.8%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: var(--text-muted); font-family: monospace;">
+                    0.0 ms (Offline)</td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: var(--accent-clinical); font-family: monospace;">
+                    3.38 GB</td>
+                  <td style="padding: 12px 16px; text-align: center;">
+                    <span style="color: #f87171; font-size: 0.75rem; font-weight: 600;">#6</span>
+                  </td>
+                </tr>
+                <tr id="detail-m5" class="benchmarks-detail-row"
+                  style="display: none; background: var(--card-bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+                  <td colspan="7" style="padding: 14px 18px;">
+                    <div
+                      style="display: flex; flex-direction: column; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                      <div style="font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;">
+                        <strong style="color: var(--accent-clinical);">Mechanism & Architecture:</strong> Post-hoc
+                        gradient ascent to erase memorized MIMIC tokens; eliminates residual leaks but causes
+                        catastrophic clinical capability collapse (utility drops to 49.8%).
+                      </div>
+                      <div
+                        style="font-size: 0.75rem; color: var(--text-body); line-height: 1.5; background: var(--bg-surface); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #f87171;">
+                        <strong style="color: #f87171;">Key Research Finding:</strong> Severely degrades clinical
+                        diagnostic accuracy; unviable for real-world clinical medicine.
+                      </div>
+                      <div
+                        style="display: flex; align-items: center; gap: 16px; font-size: 0.72rem; color: var(--text-muted); font-family: monospace; padding-top: 4px;">
+                        <span>Attack Block Rate: <strong style="color: var(--accent-clinical);">100.0%</strong></span>
+                        <span>•</span>
+                        <span>Benign False-Block Rate: <strong style="color: #f87171;">0.0%</strong></span>
+                        <span>•</span>
+                        <span style="color: var(--text-dim);">Click row to collapse</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- M6: Hybrid Pipeline (Pareto Best) -->
+                <tr class="table-row-benchmarks pareto-best-row" onclick="toggleBenchmarkDetail('detail-m6')"
+                  style="border-bottom: 1px solid var(--border-subtle); cursor: pointer; background: rgba(16, 185, 129, 0.08);">
+                  <td style="padding: 12px 16px; font-weight: 800; color: var(--text-primary);">
+                    <span
+                      style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; border: 1px solid rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; gap: 4px;">
+                      M6 <i data-lucide="chevron-down" style="width: 11px; height: 11px; opacity: 0.6;"></i>
+                    </span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; color: var(--text-body); font-family: 'Plus Jakarta Sans', sans-serif;">
+                    <div style="font-weight: 700; font-size: 0.8125rem; color: #34d399;">Hybrid Pipeline (M3 + M4 + M2)
+                    </div>
+                    <div style="font-size: 0.68rem; color: var(--text-muted); margin-top: 2px;">Multi-Tier Composed
+                      Defense (#1 Pareto Best)</div>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">0.0%</span>
+                  </td>
+                  <td style="padding: 12px 16px; text-align: right; color: #34d399; font-weight: 700;">
+                    <span
+                      style="background: #34d39918; padding: 3px 8px; border-radius: 4px; border: 1px solid #34d39933;">97.4%</span>
+                  </td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: #38bdf8; font-weight: 700; font-family: monospace;">
+                    +3.0 ms</td>
+                  <td
+                    style="padding: 12px 16px; text-align: right; color: var(--accent-clinical); font-family: monospace; font-weight: 700;">
+                    3.51 GB</td>
+                  <td style="padding: 12px 16px; text-align: center;">
+                    <span
+                      style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 3px 9px; border-radius: 999px; font-weight: 800; font-size: 0.72rem; border: 1px solid rgba(16, 185, 129, 0.4); display: inline-flex; align-items: center; gap: 4px;">🏆
+                      #1 PARETO</span>
+                  </td>
+                </tr>
+                <tr id="detail-m6" class="benchmarks-detail-row"
+                  style="display: none; background: var(--card-bg-subtle); border-bottom: 1px solid var(--border-subtle);">
+                  <td colspan="7" style="padding: 14px 18px;">
+                    <div
+                      style="display: flex; flex-direction: column; gap: 8px; font-family: 'Plus Jakarta Sans', sans-serif;">
+                      <div style="font-size: 0.78rem; color: var(--text-primary); line-height: 1.5;">
+                        <strong style="color: var(--accent-clinical);">Mechanism & Architecture:</strong> Unified
+                        defense stack: Tier-1 M3 Guardrail + M4 MoPE dynamic routing + Tier-2 M2 attention suppression.
+                        Achieves 0.0% PHI leak, 97.4% utility retention, and only +3.0 ms latency overhead.
+                      </div>
+                      <div
+                        style="font-size: 0.75rem; color: var(--text-body); line-height: 1.5; background: var(--bg-surface); padding: 8px 12px; border-radius: 6px; border-left: 3px solid #34d399;">
+                        <strong style="color: #34d399;">Key Research Finding:</strong> Optimal Pareto trade-off:
+                        complete HIPAA privacy protection with virtually zero medical intelligence degradation.
+                      </div>
+                      <div
+                        style="display: flex; align-items: center; gap: 16px; font-size: 0.72rem; color: var(--text-muted); font-family: monospace; padding-top: 4px;">
+                        <span>Attack Block Rate: <strong style="color: var(--accent-clinical);">100.0%</strong></span>
+                        <span>•</span>
+                        <span>Benign False-Block Rate: <strong style="color: #34d399;">2.6%</strong></span>
+                        <span>•</span>
+                        <span style="color: var(--text-dim);">Click row to collapse</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -749,7 +1174,7 @@
   </div>
 
   <!-- Frontend Logic (Relative path for Live Preview compatibility) -->
-  <script src="app.js?v=2.8"></script>
+  <script src="app.js?v=2.9"></script>
 </body>
 
 </html>

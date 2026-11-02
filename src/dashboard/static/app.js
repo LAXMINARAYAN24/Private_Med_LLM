@@ -132,6 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const chatInput = document.getElementById("chat-input");
   if (chatInput) {
     chatInput.addEventListener("input", autoResizePromptInput);
+    chatInput.addEventListener("keyup", autoResizePromptInput);
+    chatInput.addEventListener("paste", () => setTimeout(autoResizePromptInput, 20));
+    chatInput.addEventListener("change", autoResizePromptInput);
     autoResizePromptInput();
   }
 
@@ -266,11 +269,11 @@ async function initPresets() {
       btn.style.fontSize = "0.75rem";
       btn.innerHTML = `
         <div style="width: 100%; display: flex; flex-direction: column; gap: 2px;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-weight: 600; color: #fca5a5;">${atk.label}</span>
-            <span style="font-size: 0.62rem; color: #f87171; font-family: monospace;">${atk.category}</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <span style="font-weight: 600; color: #fca5a5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">${escapeHtml(atk.label)}</span>
+            <span style="font-size: 0.62rem; color: #f87171; font-family: monospace; flex-shrink: 0;">${escapeHtml(atk.category)}</span>
           </div>
-          <span style="font-size: 0.68rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${atk.prompt}</span>
+          <span style="font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(atk.prompt)}</span>
         </div>
       `;
       btn.onclick = () => injectAndSendPrompt(atk.prompt, "m6");
@@ -284,11 +287,11 @@ async function initPresets() {
       btn.style.fontSize = "0.75rem";
       btn.innerHTML = `
         <div style="width: 100%; display: flex; flex-direction: column; gap: 2px;">
-          <div style="display: flex; align-items: center; justify-content: space-between;">
-            <span style="font-weight: 600; color: #6ee7b7;">${ben.label}</span>
-            <span style="font-size: 0.62rem; color: #34d399; font-family: monospace;">${ben.category}</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 6px;">
+            <span style="font-weight: 600; color: #6ee7b7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1;">${escapeHtml(ben.label)}</span>
+            <span style="font-size: 0.62rem; color: #34d399; font-family: monospace; flex-shrink: 0;">${escapeHtml(ben.category)}</span>
           </div>
-          <span style="font-size: 0.68rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${ben.prompt}</span>
+          <span style="font-size: 0.68rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(ben.prompt)}</span>
         </div>
       `;
       btn.onclick = () => injectAndSendPrompt(ben.prompt, "m6");
@@ -321,15 +324,28 @@ function autoResizePromptInput() {
   const textarea = document.getElementById("chat-input");
   if (!textarea) return;
   textarea.style.height = "auto";
-  const newHeight = Math.min(Math.max(textarea.scrollHeight, 24), 220);
-  textarea.style.height = newHeight + "px";
-  textarea.style.overflowY = textarea.scrollHeight > 220 ? "auto" : "hidden";
+  const scrollHeight = textarea.scrollHeight;
+  const maxHeight = 280;
+  if (scrollHeight > maxHeight) {
+    textarea.style.height = maxHeight + "px";
+    textarea.style.overflowY = "auto";
+  } else {
+    textarea.style.height = Math.max(scrollHeight, 22) + "px";
+    textarea.style.overflowY = "hidden";
+  }
 
   const sendBtn = document.getElementById("btn-send");
   if (sendBtn) {
     sendBtn.disabled = textarea.value.trim().length === 0;
   }
 }
+
+window.toggleBenchmarkDetail = function (detailId) {
+  const row = document.getElementById(detailId);
+  if (!row) return;
+  row.style.display = row.style.display === "none" ? "table-row" : "none";
+  safeRenderIcons();
+};
 
 function handleTextareaKeyDown(e) {
   if (e.key === "Enter" && !e.shiftKey) {
@@ -592,11 +608,27 @@ function openTurnInDrawer(turnIndex, openDrawer = true) {
   mope.innerText = `${(t.mope.attack_prob * 100).toFixed(1)}% (Head #${t.mope.routed_expert})`;
   lat.innerText = `${t.latency_ms} ms (Shared MiniLM)`;
 
-  // Update Radar Chart
+  // Update Radar Chart (Live Cosine Similarities across 9 Threat Classes)
   if (RADAR_CHART) {
-    const rawScores = t.guardrail.raw_scores || {};
+    const rawScores = (t.guardrail && (t.guardrail.similarities || t.guardrail.raw_scores)) || {};
     const labels = ["Benign", "Command", "Concern", "Pretext", "Format", "Inquiry", "Pressure", "Request", "Role Play"];
-    const values = labels.map(l => rawScores[l] || (Math.random() * 0.4 + 0.1));
+    const keyMap = {
+      "Benign": "Benign",
+      "Command": "Command",
+      "Concern": "Concern Expression",
+      "Pretext": "False Pretext",
+      "Format": "Format Manipulation",
+      "Inquiry": "Inquiry",
+      "Pressure": "Pressure",
+      "Request": "Request",
+      "Role Play": "Role Play"
+    };
+    const values = labels.map(l => {
+      const fullKey = keyMap[l] || l;
+      return typeof rawScores[fullKey] === "number"
+        ? Math.max(0.02, Math.min(1.0, rawScores[fullKey]))
+        : (typeof rawScores[l] === "number" ? Math.max(0.02, Math.min(1.0, rawScores[l])) : 0.1);
+    });
     RADAR_CHART.data.datasets[0].data = values;
     RADAR_CHART.data.datasets[0].borderColor = isBlocked ? "rgba(239, 68, 68, 0.85)" : "rgba(16, 185, 129, 0.85)";
     RADAR_CHART.data.datasets[0].backgroundColor = isBlocked ? "rgba(239, 68, 68, 0.2)" : "rgba(16, 185, 129, 0.2)";
@@ -769,6 +801,7 @@ function closeLightbox() {
 async function initBenchmarksTable() {
   try {
     const res = await fetch(`${API_BASE}/api/benchmarks`);
+    if (!res.ok) return;
     const data = await res.json();
     const tbody = document.getElementById("table-vii-modal-body");
     if (!tbody || !data || !Array.isArray(data.table_vii)) return;
@@ -878,7 +911,7 @@ async function initBenchmarksTable() {
 
     safeRenderIcons();
   } catch (err) {
-    console.error("Failed to load benchmarks:", err);
+    console.warn("Using pre-rendered Table VII data (offline/fallback mode):", err);
   }
 }
 
