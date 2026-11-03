@@ -145,8 +145,8 @@ All 15 publication figures are generated directly from experimental validation r
 ### 1. Clone Repository & Install Dependencies
 
 ```bash
-git clone https://github.com/your-username/MedShield-AI.git
-cd MedShield-AI
+git clone https://github.com/LAXMINARAYAN24/Private_Med_LLM.git
+cd Private_Med_LLM
 
 # Create virtual environment
 python -m venv .venv
@@ -156,7 +156,16 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 2. Verify GPU Acceleration & Checkpoints
+### 2. One-Click Checkpoint Restoration (No Retraining Required)
+
+All trained model weights (~1.68 GB) are hosted on our private Hugging Face repository. Restore them in one click without retraining:
+
+```bash
+python restore_checkpoints.py
+```
+*(For full details on what files are needed and how they are hosted, see [**`RECOVERY.md`**](RECOVERY.md).)*
+
+### 3. Verify GPU Acceleration & Checkpoints
 
 ```bash
 python -c "import torch; print('CUDA Available:', torch.cuda.is_available(), '| Device:', torch.cuda.get_device_name(0))"
