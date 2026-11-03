@@ -13,7 +13,7 @@ This flowchart illustrates the end-to-end inference flow of MedShield AI, showin
 ### High-Resolution Rendered Flowchart Image
 ![MedShield AI End-to-End Pipeline Flowchart](pipeline_flowchart.png)
 
-*Figure: High-resolution end-to-end inference pipeline flowchart diagram for MedShield AI (also available as publication vector schematic at [`docs/pipeline_architecture_diagram.png`](file:///c:/Users/sahul/Downloads/Trial/Trial/docs/pipeline_architecture_diagram.png)).*
+*Figure: High-resolution end-to-end inference pipeline flowchart diagram for MedShield AI (available as lossless publication vector PDF at [`docs/pipeline_flowchart.pdf`](file:///c:/Users/sahul/Downloads/Trial/Trial/docs/pipeline_flowchart.pdf), vector SVG at [`docs/pipeline_flowchart.svg`](file:///c:/Users/sahul/Downloads/Trial/Trial/docs/pipeline_flowchart.svg), and high-res raster at [`docs/pipeline_flowchart.png`](file:///c:/Users/sahul/Downloads/Trial/Trial/docs/pipeline_flowchart.png)).*
 
 ### Mermaid Source Code
 ```mermaid
@@ -25,7 +25,7 @@ flowchart TD
     subgraph Tier1 ["2. Tier-1 Prompt-Boundary Defense"]
         API --> G["Contrastive Prototype Guardrail (src/phi_defense/guardrail.py)"]
         G -->|"Cosine Similarity Vector"| T{"Threshold Gate\n(τ = 0.521)"}
-        T -->|"Cosine Sim > τ & PHI Target"| REF["Instant Privacy Refusal (2.8 ms, 0% Leak, Zero GPU Cost)"]
+        T -->|"Cosine Sim > τ & PHI Target"| REF["Instant Privacy Refusal (2.1 ms, 0% Leak, Zero GPU Cost)"]
         T -->|"Cosine Sim ≤ τ"| MOPE["MoPE 9-Head Dynamic Router (src/phi_defense/mope.py)"]
         MOPE -->|"Entropy Regularization (H = 0.94)"| DISP["Threat Category Dispatch (#0 Benign ... #8 Roleplay)"]
     end

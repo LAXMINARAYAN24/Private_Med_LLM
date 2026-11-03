@@ -119,7 +119,7 @@ The following table categorizes every single file located in the root directory.
 | 28 | `MedGemma_M1_Training_Kaggle.ipynb` | 519 KB | **MOVE to `notebooks/`** | Jupyter notebook for running MedGemma LoRA fine-tuning on Kaggle GPUs. | **Safe Organization:** Notebooks belong in a dedicated `notebooks/` folder. |
 | 29 | `phi_privacy_defense_colab (1) (1).ipynb` | 181 KB | **RENAME & MOVE to `notebooks/phi_privacy_defense_colab.ipynb`** | Google Colab training notebook with duplicated copy markers in filename. | **Safe Organization:** Renames to clean title and organizes into `notebooks/`. |
 | 30 | `Final_Compiled_PHI_Defense_Report.pdf` | 1.2 MB | **MOVE to `docs/deliverables/`** | Official final academic report compiled for submission. | **Deliverable:** Belongs in `docs/deliverables/` rather than root. |
-| 31 | `Final_Medical_LLM_Privacy_Presentation.pptx` | 1.8 MB | **MOVE to `docs/deliverables/`** | Official final slide deck presentation. | **Deliverable:** Belongs in `docs/deliverables/`. |
+| 31 | `MedShield_AI.pptx` | 3.1 MB | **KEEP in root & `docs/deliverables/`** | Official final evaluation slide deck presentation (16 widescreen slides). | **Final Deliverable:** The primary final presentation deck. |
 | 32 | `MIDESEM_Medical_LLM_Privacy_Presentation.pptx` | 9.6 MB | **MOVE to `docs/deliverables/`** | Midsem presentation slide deck. | **Deliverable:** Belongs in `docs/deliverables/`. |
 | 33 | `Report_v2_LLM.pdf` | 1.5 MB | **MOVE to `docs/deliverables/`** | Preliminary evaluation report v2. | **Deliverable:** Belongs in `docs/deliverables/`. |
 | 34 | `Paper_Can_Personal_Health_Information_Be_Secured_in_LLM_Privacy_Attack_and_Defense_in_the_Medical_Domain.pdf` | 861 KB | **MOVE to `docs/papers/`** | Foundational reference research paper. | **Reference:** Belongs in `docs/papers/`. |
@@ -205,8 +205,10 @@ c:\Users\sahul\Downloads\Trial\Trial
 │   ├── ARCHITECTURE.md             # Multi-tier system architecture specification
 │   ├── DESIGN_SYSTEM.md            # Workstation visual design tokens & specs
 │   ├── AGENTS.md                   # Agentic guidelines and workflows
-│   ├── deliverables/               # [Proposed] Final PDF reports and PPTX decks
-│   └── papers/                     # [Proposed] Reference research papers
+│   ├── deliverables/               # Final academic report PDFs, presentation PPTX decks, Overleaf ZIP
+│   │   ├── Final_Compiled_PHI_Defense_Report.pdf # 12-page complete IEEE research paper
+│   │   └── PHI_Defense_Report_Overleaf.zip       # Overleaf-ready project package (main.tex + figures)
+│   └── papers/                     # Reference research papers
 │
 ├── checkpoints/                    # [PROTECTED] Trained neural network weights
 ├── models/                         # [PROTECTED] Hugging Face cache (MedGemma + MiniLM)
@@ -360,7 +362,7 @@ if (Test-Path "phi_privacy_defense_colab (1) (1).ipynb") { Move-Item "phi_privac
 
 # 5. Move final presentation decks, reports & papers into docs
 if (Test-Path "Final_Compiled_PHI_Defense_Report.pdf") { Move-Item "Final_Compiled_PHI_Defense_Report.pdf" "docs/deliverables/" -Force }
-if (Test-Path "Final_Medical_LLM_Privacy_Presentation.pptx") { Move-Item "Final_Medical_LLM_Privacy_Presentation.pptx" "docs/deliverables/" -Force }
+if (Test-Path "MedShield_AI.pptx") { Copy-Item "MedShield_AI.pptx" "docs/deliverables/" -Force }
 if (Test-Path "MIDESEM_Medical_LLM_Privacy_Presentation.pptx") { Move-Item "MIDESEM_Medical_LLM_Privacy_Presentation.pptx" "docs/deliverables/" -Force }
 if (Test-Path "Report_v2_LLM.pdf") { Move-Item "Report_v2_LLM.pdf" "docs/deliverables/" -Force }
 if (Test-Path "Paper_Can_Personal_Health_Information_Be_Secured_in_LLM_Privacy_Attack_and_Defense_in_the_Medical_Domain.pdf") {
