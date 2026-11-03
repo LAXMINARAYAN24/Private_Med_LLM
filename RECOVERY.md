@@ -59,7 +59,24 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### Step 3: Run the One-Click Restoration Script
+### Step 3: Configure Hugging Face Token (.env)
+The .env file contains your private Hugging Face authentication token (HF_TOKEN). To keep credentials secure, the repository includes a [.env.example](.env.example) template:
+
+1. Copy .env.example to .env:
+   `ash
+   # Windows PowerShell:
+   Copy-Item .env.example .env
+
+   # Linux / macOS:
+   cp .env.example .env
+   `
+2. Open .env and paste your Hugging Face access token:
+   `env
+   HF_TOKEN=hf_your_actual_token_here
+   `
+   *(Note: You can also simply run huggingface-cli login in your terminal — the recovery script automatically detects either method).*
+
+### Step 4: Run the One-Click Restoration Script
 Make sure your Hugging Face token is set in `.env` (`HF_TOKEN=hf_...`) or you are logged in (`huggingface-cli login`), then run:
 
 ```bash
@@ -78,7 +95,7 @@ python restore_checkpoints.py --include-data
 
 ---
 
-## 4. Launch the System
+## 5. Launch the System
 
 Once restored, launch the complete full-stack assistant and telemetry dashboard:
 
@@ -92,7 +109,7 @@ python run_dashboard.py
 
 ---
 
-## 5. Direct Cloud URLs
+## 6. Direct Cloud URLs
 
 1. **GitHub Repository:** [`https://github.com/LAXMINARAYAN24/Private_Med_LLM`](https://github.com/LAXMINARAYAN24/Private_Med_LLM)
 2. **Private Hugging Face Models:** [`https://huggingface.co/Laxminarayan24/medshield-checkpoints`](https://huggingface.co/Laxminarayan24/medshield-checkpoints)
@@ -100,7 +117,7 @@ python run_dashboard.py
 
 ---
 
-## 6. Author Credits & Institutional Attribution
+## 7. Author Credits & Institutional Attribution
 - **Harshul Jain** (231IT025)
 - **Laxminarayan Sahu** (231IT035)
 - **Nikhil Agarwal** (231IT044)
