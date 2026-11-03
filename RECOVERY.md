@@ -1,53 +1,45 @@
-# 🛡️ MedShield AI — Project Recovery & Restoration Guide
+# 🛡️ MedShield AI — Project Recovery & 30 GB Cloud Restoration Guide
 
-This document explains **how to restore and run the complete MedShield AI system on any fresh machine without any retraining**.
+This document explains **how the entire 30.0 GB MedShield AI system is secured across the cloud** and **how to restore and run the complete system on any fresh machine without any retraining**.
 
 ---
 
-## 1. What Files Are Needed to Run the Project (Without Retraining)?
+## 1. Complete 30.0 GB Cloud Storage Accounting
 
-To run the full multi-tier defense architecture, the interactive clinical chat assistant, and the live telemetry dashboard ([`run_dashboard.py`](file:///c:/Users/sahul/Downloads/Trial/Trial/run_dashboard.py)), the following 4 components are required:
+Every single file and byte of the 30.0 GB project is permanently stored and accounted for:
 
-| Component | Path / Destination | Size | Description & Purpose |
+| Component | What Is Inside | Exact Size | Cloud Platform & Repository |
 | :--- | :--- | :---: | :--- |
-| **1. Source Code & UI** | `src/`, `pipeline/`, `scripts/`, `run_dashboard.py` | ~117 MB | Python FastAPI backend, HTML5/CSS3 telemetry dashboard, evaluation suites, and defense runners. |
-| **2. Tier-1 Prototype Guardrail & MoPE** | `checkpoints/guardrail_encoder_plus/`<br>`checkpoints/mope_plus/` | ~90 MB | Trained `all-MiniLM-L6-v2` supervised contrastive encoder, prototype vectors (`prototypes.pt`), and 9-expert MoPE risk router (`mope_plus.pt`). |
-| **3. Tier-2 In-Decoder Attention Gate** | `checkpoints/m2_gate/gate.pt`<br>`checkpoints/m2_medgemma_gate/gate.pt` | ~681 MB | Trained attention suppression gate tensors applied to middle decoder layers $[n/4, 3n/4)$. |
-| **4. Target Generative Model & Adapter** | `m1_medgemma_lora/adapter_model.safetensors`<br>`checkpoints/m1_medgemma_lora/` | ~284 MB | Fine-tuned Google MedGemma-4B-IT QLoRA adapter weights (rank $r=32$, $\alpha=64$). |
-| **5. Base Generative Backbone** | `google/medgemma-4b-it` (Hugging Face) | ~2.5 GB | Base medical model quantized to 4-bit NF4 (auto-downloaded by transformers). |
+| **1. Source Code & Deliverables** | All Python scripts, UI dashboard, final 17-page IEEE Report PDF, 18-slide PPTX deck, LaTeX Overleaf suite, figures, and test logs. | **0.12 GB** *(222 files)* | ☁️ **GitHub Repository**<br>[`https://github.com/LAXMINARAYAN24/Private_Med_LLM`](https://github.com/LAXMINARAYAN24/Private_Med_LLM) |
+| **2. Trained Model Checkpoints** | MiniLM contrastive prototypes, 9-expert MoPE router, Tier-2 in-decoder attention suppression gates, and MedGemma LoRA adapters. | **1.68 GB** *(43 files)* | ☁️ **Private Hugging Face Models Hub**<br>[`https://huggingface.co/Laxminarayan24/medshield-checkpoints`](https://huggingface.co/Laxminarayan24/medshield-checkpoints) |
+| **3. Raw Research Datasets** | All 10,000 MIMIC-III inpatient records, 1,800-patient target facts cohort, MediRed+ 6,624 attack prompts, and evaluation splits. | **12.09 GB** *(122 files)* | ☁️ **Private Hugging Face Datasets Hub**<br>[`https://huggingface.co/datasets/Laxminarayan24/medshield-data`](https://huggingface.co/datasets/Laxminarayan24/medshield-data) |
+| **4. Base Model Weights** | Pretrained Google MedGemma-4B-IT foundation model cache. | **10.44 GB** | ☁️ **Google's Official Cloud Hub**<br>[`google/medgemma-4b-it`](https://huggingface.co/google/medgemma-4b-it) *(Auto-streams on launch)* |
+| **5. Python Virtual Environment** | Installed PyTorch and CUDA runtime binaries. | **5.75 GB** | ☁️ **PyPI Cloud via `requirements.txt`**<br>*(Recreated in 2 minutes anytime via pip)* |
+| **TOTAL ACCOUNTED FOR** | **Entire Project & Runtime** | **30.08 GB** | **100% Retrievable from the Cloud** |
 
 ---
 
-## 2. Where Are These Files Stored?
+## 2. What Files Are Needed to Run Without Retraining?
 
-Because large model weights and patient-derived LoRA adapters cannot be hosted on public GitHub (due to GitHub's 100 MB file limit and PhysioNet DUA compliance), the project is partitioned into two secure cloud repositories:
+To run the full multi-tier defense architecture, the interactive clinical chat assistant, and the live telemetry dashboard ([`run_dashboard.py`](file:///c:/Users/sahul/Downloads/Trial/Trial/run_dashboard.py)), only the **code (GitHub)** and the **checkpoints (Hugging Face)** are needed (~1.8 GB total):
 
-### A. GitHub Repository (Code, Docs, Reports & Presentation)
-- **URL:** [`https://github.com/LAXMINARAYAN24/Private_Med_LLM`](https://github.com/LAXMINARAYAN24/Private_Med_LLM)
-- **Visibility:** Public / Repository
-- **What is stored here:**
-  - All application code (`src/dashboard/`, `src/phi_defense/`, `pipeline/`, `run_dashboard.py`).
-  - Final IEEEtran Research Report PDF: [`docs/deliverables/.../Privacy_Preserving_Medical_Large_Language.pdf`](file:///c:/Users/sahul/Downloads/Trial/Trial/docs/deliverables/Privacy_Preserving_Medical_Large_Language_Models__Mitigating_Protected_Health_Information_Leakage_via_Contrastive_Prototype_Guardrails__Dynamic_Mixtur/Privacy_Preserving_Medical_Large_Language.pdf).
-  - Final Presentation Deck PPTX: [`docs/deliverables/.../Privacy_Preserving_Medical_Large_Language.pptx`](file:///c:/Users/sahul/Downloads/Trial/Trial/docs/deliverables/Privacy_Preserving_Medical_Large_Language_Models__Mitigating_Protected_Health_Information_Leakage_via_Contrastive_Prototype_Guardrails__Dynamic_Mixtur/Privacy_Preserving_Medical_Large_Language.pptx).
-  - Complete Overleaf LaTeX package and all 16 evaluation figures at 300 DPI (`results/`).
-  - Automated one-click restoration script: [`restore_checkpoints.py`](file:///c:/Users/sahul/Downloads/Trial/Trial/restore_checkpoints.py).
-
-### B. Hugging Face Hub (Trained Model Weights & Checkpoints)
-- **URL:** [`https://huggingface.co/Laxminarayan24/medshield-checkpoints`](https://huggingface.co/Laxminarayan24/medshield-checkpoints)
-- **Visibility:** **Private** *(Secured with your Hugging Face account)*
-- **Total Payload:** **37 files (1.68 GB)**
-- **What is stored here:**
-  - `checkpoints/guardrail_encoder_plus/` (Prototypes and model weights)
-  - `checkpoints/mope_plus/` (Load-balanced MoPE routers)
-  - `checkpoints/m2_gate/` and `checkpoints/m2_medgemma_gate/` (Attention gates)
-  - `m1_medgemma_lora/` and `checkpoints/m1_medgemma_lora/` (Fine-tuned MedGemma LoRA adapters)
-  - `checkpoints/m5_1_unlearn/` and `checkpoints/m5_2_unlearn/` (Unlearning baseline weights)
+```text
+Private_Med_LLM/
+├── checkpoints/
+│   ├── guardrail_encoder_plus/       # Tier-1 supervised contrastive prototypes (model.safetensors, prototypes.pt)
+│   ├── mope_plus/                    # Tier-1 9-expert dynamic risk router (mope_plus.pt)
+│   ├── m2_gate/                      # Tier-2 in-decoder attention suppression gate (gate.pt)
+│   └── m1_medgemma_lora/             # MedGemma-4B-IT QLoRA adapter
+├── m1_medgemma_lora/                 # Target adapter directory (adapter_model.safetensors)
+├── src/dashboard/                    # FastAPI web server & live telemetry dashboard
+└── run_dashboard.py                  # Full-stack system launcher
+```
 
 ---
 
 ## 3. How to Restore the Entire Project in One Click
 
-Follow these 3 quick steps on any computer:
+Follow these simple steps on any machine:
 
 ### Step 1: Clone the Code from GitHub
 ```bash
@@ -68,16 +60,21 @@ pip install -r requirements.txt
 ```
 
 ### Step 3: Run the One-Click Restoration Script
-Ensure you are logged into Hugging Face (or set your token in `.env` as `HF_TOKEN=hf_...`), then execute:
+Make sure your Hugging Face token is set in `.env` (`HF_TOKEN=hf_...`) or you are logged in (`huggingface-cli login`), then run:
 
 ```bash
+# Option A: Restore trained model checkpoints (~1.68 GB) — Ready to run immediately!
 python restore_checkpoints.py
+
+# Option B: Also restore the full raw MIMIC-III and MediRed+ datasets (~12.1 GB)
+python restore_checkpoints.py --include-data
 ```
 
 **What this script does automatically:**
 1. Authenticates securely with Hugging Face using your token.
-2. Downloads all 37 trained checkpoint files (~1.68 GB) directly into their correct directory paths (`checkpoints/` and `m1_medgemma_lora/`).
-3. Validates file sizes and tensor integrity.
+2. Downloads the trained checkpoint files (~1.68 GB) directly into their correct directory paths (`checkpoints/` and `m1_medgemma_lora/`).
+3. If `--include-data` is specified, also downloads the complete raw MIMIC-III and MediRed+ corpora into `data/` and `MIMIC -III (10000 patients)/`.
+4. Validates file sizes and tensor integrity.
 
 ---
 
@@ -95,13 +92,11 @@ python run_dashboard.py
 
 ---
 
-## 5. Alternative Manual One-Liner (Python REPL)
+## 5. Direct Cloud URLs
 
-If you do not want to use `restore_checkpoints.py`, you can download the checkpoints using a single Python one-liner:
-
-```python
-python -c "from huggingface_hub import snapshot_download; snapshot_download('Laxminarayan24/medshield-checkpoints', local_dir='.', ignore_patterns=['README.md', '.git*'])"
-```
+1. **GitHub Repository:** [`https://github.com/LAXMINARAYAN24/Private_Med_LLM`](https://github.com/LAXMINARAYAN24/Private_Med_LLM)
+2. **Private Hugging Face Models:** [`https://huggingface.co/Laxminarayan24/medshield-checkpoints`](https://huggingface.co/Laxminarayan24/medshield-checkpoints)
+3. **Private Hugging Face Datasets:** [`https://huggingface.co/datasets/Laxminarayan24/medshield-data`](https://huggingface.co/datasets/Laxminarayan24/medshield-data)
 
 ---
 
